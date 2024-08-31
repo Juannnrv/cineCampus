@@ -147,7 +147,24 @@
 - **show_id (required):** The ID of the show for which tickets are being purchased.
 - **date_movement (required):** The date and time of the show in ISO 8601 format.
 - **seats (required):** An array of seat identifiers the user wishes to book.
-- **card_id (optional):** The ID of the credit card to be used for the payment. If omitted, the payment will be processed as cash.
+- **card_id (optional):** The ID of the credit card to be used for the payment. If omitted, the payment will be processed as cash and card_id is gonna be null.
+
+**Request Body (JSON):**
+
+  ```
+  { 
+    "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+    "show_id": "79d0c4e68b819589635a1eb0",
+    "date_movement": "2024-09-07T17:00:00Z",
+    "status": "purchased",
+    "seats": [
+      "A1",
+      "A2"
+    ],
+    "description": "Ticket purchase for movie",
+    "card_id": "64fd00ab7a6d9b2f40c5f3d2"
+  }
+  ```
 
 **Responses:**
 
@@ -164,17 +181,73 @@
       "id": "647cdefcd5d8a030b0d2e4f2",
       "user_id": "64fcb97b7a6d9b2f40c5f3c8",
       "show_id": "79d0c4e68b819589635a1eb0",
-      "date_movement": "2024-09-07T17:00:00Z",
+      "date_movement": "2024-09-07T17:00:00.000Z",
       "status": "purchased",
-      "seats": ["A1", "A2"],
-      "description": "Ticket purchase for movie"
+      "seats": [
+        "A1",
+        "A2"
+      ],
+      "description": "Ticket purchase for movie",
+      "_id": "66d74ea3a8b17a5cf5eaa493"
     },
     "payment": {
-      "id": "647cdefcd5d8a030b0d2e4f3",
-      "movement_id": "647cdefcd5d8a030b0d2e4f2",
+      "movement_id": "66d74ea3a8b17a5cf5eaa493",
       "payment_method": "credit card",
       "card_id": "64fd00ab7a6d9b2f40c5f3d2",
-      "paid": true
+      "paid": true,
+      "_id": "66d74ea3a8b17a5cf5eaa496"
+    },
+    "card": {
+      "name": "Premium Card",
+      "discount": 10,
+      "issueDate": "2024-02-01T00:00:00.000Z"
+    }
+  }
+  ```
+
+  **Example Response for non-specified credit card (JSON):**
+
+  **Request Body (JSON):**
+
+  ```
+  {
+    "user_id": "66d754820daf096ce6951bda",
+    "show_id": "79d0c4e68b819589635a1eb0",
+    "date_movement": "2024-09-07T17:00:00Z",
+    "seats": [
+      "A1"
+    ],
+    "description": ""
+  }
+  ```
+  **Response**
+
+  ```
+  {
+    "message": "Ticket created successfully.",
+    "ticket": {
+      "user_id": "66d754820daf096ce6951bda",
+      "show_id": "79d0c4e68b819589635a1eb0",
+      "date_movement": "2024-09-07T17:00:00.000Z",
+      "status": "purchased",
+      "seats": [
+        "A1"
+      ],
+      "description": "",
+      "_id": "66d756abe1bce70cdb91e6e4"
+    },
+    "payment": {
+      "movement_id": "66d756abe1bce70cdb91e6e4",
+      "payment_method": "credit card",
+      "card_id": null,
+      "paid": true,
+      "_id": "66d756abe1bce70cdb91e6e7"
+    },
+    "card": {
+      "name": "Standard Card",
+      "validity": false,
+      "discount": 5,
+      "issueDate": "2024-01-15T00:00:00.000Z"
     }
   }
   ```
@@ -235,6 +308,21 @@
 - **seats (required):** An array of seat identifiers the user wishes to book.
 - **card_id (required):** The ID of the credit card used for the payment attempt.
 
+**Request Body (JSON):**
+
+  ```
+  {
+    "user_id": "64fcb97b7a6d9b2f40c5f3cb",
+    "show_id": "79d0c4e68b819589635a1eb0",
+    "date_movement": "2024-09-07T17:00:00Z",
+    "seats": [
+      "A1"
+    ],
+    "description": "",
+    "card_id": "64fd00ab7a6d9b2f40c5f3d2"
+  }
+  ```
+
 **Responses:**
 
 - **400 - Bad Request:**
@@ -269,32 +357,49 @@
 
   **Example Response for Invalid Card (JSON):**
 
+  **Request Body (JSON):**
+
+  ```
+  {
+    "user_id": "66d754820daf096ce6951bda",
+    "show_id": "79d0c4e68b819589635a1eb0",
+    "date_movement": "2024-09-07T17:00:00Z",
+    "seats": [
+      "A1"
+    ],
+    "description": "",
+    "card_id": "64fd00ab7a6d9b2f40c5f3d1"
+  }
+  ```
+
+**Response:**
+
   ```
   {
     "message": "Card is not valid. Payment rejected.",
     "ticket": {
-      "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+      "user_id": "66d754820daf096ce6951bda",
       "show_id": "79d0c4e68b819589635a1eb0",
       "date_movement": "2024-09-07T17:00:00.000Z",
       "status": "rejected",
       "seats": [
-      "A1",
-      "A2"
+        "A1"
       ],
       "description": "Card is not valid.",
-      "id": "66d4a4a2c146980c2e8da3c8"
+      "_id": "66d754dee1bce70cdb91e6cc"
     },
     "payment": {
-      "movement_id": "66d4a4a2c146980c2e8da3c8",
+      "movement_id": "66d754dee1bce70cdb91e6cc",
       "payment_method": "credit card",
-      "card_id": "64fd00ab7a6d9b2f40c5f3d2",
+      "card_id": "64fd00ab7a6d9b2f40c5f3d1",
       "paid": false,
-      "id": "66d4a4a2c146980c2e8da3cb"
+      "_id": "66d754dee1bce70cdb91e6cf"
     },
     "card": {
-      "name": "Premium Card",
+      "name": "Standard Card",
       "validity": false,
-      "discount": 10
+      "discount": 5,
+      "issueDate": "2024-01-15T00:00:00.000Z"
     }
   }
   ```
@@ -359,5 +464,187 @@
   ```
   {
     "message": "Some error occurred while retrieving movies."
+  }
+  ```
+
+## 3. Seat Allocation
+
+### Book a Ticket
+
+**URL:** `http://localhost:5000/tickets/book/v1`
+
+**Method:** POST
+
+**Auth:** True
+
+**Description:** Allows a user to book seats for a specific show. If all selected seats are available, the booking is confirmed and the seats are marked as unavailable. If any of the selected seats are not available, the booking is placed on hold, and the seats remain available.
+
+**Preconditions:** The user must be registered, and the show must exist with available seats.
+
+**Request Body Parameters:**
+
+- **user_id (required):** The ID of the user making the booking.
+- **show_id (required):** The ID of the show for which the booking is being made.
+- **date_movement (required):** The date and time of the booking in ISO 8601 format.
+- **seats (required):** An array of seat identifiers the user wishes to book.
+- **description (optional):** Optional description for the booking.
+
+**Responses:**
+
+- **200 - On Hold:**
+
+  **Description:** Some or all of the selected seats are not available. The booking is put on hold, and the seats remain available.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "The following seats are not available: A1, B2. Your booking is on hold.",
+    "ticket": {
+      "id": "647cdefcd5d8a030b0d2e4f2",
+      "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+      "show_id": "79d0c4e68b819589635a1eb0",
+      "date_movement": "2024-09-07T17:00:00Z",
+      "status": "on Hold",
+      "seats": ["A1", "B2"],
+      "description": "Ticket booking on hold due to seat unavailability."
+    }
+  }
+  ```
+
+- **201 - Success:**
+
+  **Description:** All selected seats are available and successfully booked. The seats are marked as unavailable.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Ticket booked successfully.",
+    "ticket": {
+      "id": "647cdefcd5d8a030b0d2e4f3",
+      "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+      "show_id": "79d0c4e68b819589635a1eb0",
+      "date_movement": "2024-09-07T17:00:00Z",
+      "status": "booked",
+      "seats": ["A1", "B2"],
+      "description": "Ticket booked for show."
+    }
+  }
+  ```
+
+- **400 - Bad Request:**
+
+  **Description:** Invalid or missing request parameters, or some selected seats are not available.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "The following seats are not available: A1, B2."
+  }
+  ```
+
+- **404 - Not Found:**
+
+  **Description:** The specified user or show could not be found in the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User not found."
+  }
+  ```
+
+  ```
+  {
+    "message": "Show not found."
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while processing the request, typically related to database operations or server issues.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Error creating or updating movement."
+  }
+  ```
+### Cancel a Ticket
+
+**URL:** `http://localhost:5000/tickets/cancel/v1/:movement_id`
+
+**Method:** POST
+
+**Auth:** True
+
+**Description:** Cancels a booked or purchased ticket. The status of the ticket is updated to “cancelled” creating a new record of the cancellation and the associated seats become available for other bookings.
+
+**Preconditions:** The ticket with the given `movement_id` must exist. The show associated with the ticket must also exist.
+
+**Request Parameters:**
+
+- **movement_id (required):** The ID of the ticket that needs to be cancelled.
+
+**Responses:**
+
+- **200 - Success:**
+
+  **Description:** The ticket was successfully cancelled, and the seats were made available again.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Ticket cancelled successfully.",
+    "ticket": {
+      "id": "647cdefcd5d8a030b0d2e4f2",
+      "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+      "show_id": "79d0c4e68b819589635a1eb0",
+      "date_movement": "2024-09-07T17:00:00Z",
+      "status": "cancelled",
+      "seats": ["A1", "A2"],
+      "description": "Ticket was cancelled."
+    }
+  }
+  ```
+
+- **404 - Not Found:**
+
+  **Description:** The specified ticket or show could not be found in the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Ticket not found."
+  }
+  ```
+
+  ```
+  {
+    "message": "Show not found."
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while processing the request, typically related to database operations or server issues.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Error creating movement."
+  }
+  ```
+
+  ```
+  {
+    "message": "Error updating show seats."
   }
   ```

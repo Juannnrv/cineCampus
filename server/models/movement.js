@@ -18,7 +18,7 @@ const MovementSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["on Hold", "purchased", "rejected", "cancelled"],
+      enum: ["on Hold", "booked", "purchased", "rejected", "cancelled"],
       required: true,
     },
     seats: {
