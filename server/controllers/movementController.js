@@ -6,6 +6,18 @@ const { handleAsync } = require("../middleware/handleAsync");
 const User = require("../models/user");
 const Show = require("../models/show");
 
+/** 
+ * @function purchaseTicket
+ * @description Purchase a ticket for a show. If the user provides a card_id, it must match the user's card_id. If no card_id is provided and the user has no card, the payment is made in cash. Otherwise, the ticket is put on hold until the payment is made.
+ * @async
+ * @method
+ * @param {Object} req - HTTP request object containing the ticket data in `req.body`.
+ * @param {Object} res - HTTP response object to send the response to the client.
+ * @returns {void}
+ * @throws {Error} Throws an error if the ticket purchase fails.
+ * @response {Object} Responds with the created ticket if successful.
+ * @response {Object} Responds with an error message if the purchase fails.
+ */
 exports.purchaseTicket = async (req, res) => {
   const {
     user_id,
@@ -13,11 +25,9 @@ exports.purchaseTicket = async (req, res) => {
     date_movement,
     seats,
     description,
-    payment_method,
     card_id,
   } = req.body;
 
-  // Buscar al usuario
   const { result: user, err: userErr } = await handleAsync(() =>
     User.findById(user_id)
   );
@@ -25,29 +35,6 @@ exports.purchaseTicket = async (req, res) => {
     return res.status(404).json({ message: "User not found." });
   }
 
-  const { result, error } = await handleAsync(() =>
-    Movement.create({
-      user_id,
-      show_id,
-      date_movement,
-      status: "on Hold",
-      seats,
-      description,
-    })
-  );
-
-  if (error) {
-    return res.status(500).json({
-      message:
-        error.message || "Some error occurred while creating the Movement.",
-    });
-  }
-
-  const movement_id = result._id;
-
-  const user_card = user.card_id;
-
-  // Buscar el show
   const { result: show, err: showErr } = await handleAsync(() =>
     Show.findById(show_id)
   );
@@ -55,9 +42,19 @@ exports.purchaseTicket = async (req, res) => {
     return res.status(404).json({ message: "Show not found." });
   }
 
-  // Actualizar asientos del show
+  const unavailableSeats = seats.filter((seat) => {
+    const seatShow = show.available_seats.find((s) => s.seat === seat);
+    return seatShow && !seatShow.availability;
+  });
+
+  if (unavailableSeats.length > 0) {
+    return res.status(400).json({
+      message: `The following seats are not available: ${unavailableSeats.join(", ")}.`,
+    });
+  }
+
   show.available_seats.forEach((seatShow) => {
-    if (seats.includes(seatShow.name)) {
+    if (seats.includes(seatShow.seat)) {
       seatShow.availability = false;
     }
   });
@@ -67,10 +64,10 @@ exports.purchaseTicket = async (req, res) => {
     return res.status(500).json({ message: "Error updating show seats." });
   }
 
-  // Caso 2: Validar card_id proporcionado
+  const user_card = user.card_id;
+
   if (card_id) {
     if (card_id.toString() !== user_card?.toString()) {
-      // La tarjeta no pertenece al usuario -> Pago rechazado
       const rejectedMovement = new Movement({
         user_id,
         show_id,
@@ -79,6 +76,18 @@ exports.purchaseTicket = async (req, res) => {
         seats,
         description: "Card doesn't belong to you.",
       });
+
+      show.available_seats.forEach((seatShow) => {
+        if (seats.includes(seatShow.seat)) {
+          seatShow.availability = true;
+        }
+      });
+
+      const { err: showSaveErr } = await handleAsync(() => show.save());
+      if (showSaveErr) {
+        return res.status(500).json({ message: "Error updating show seats." });
+      }
+
 
       const { err: rejectedMovementSaveErr } = await handleAsync(() =>
         rejectedMovement.save()
@@ -92,7 +101,7 @@ exports.purchaseTicket = async (req, res) => {
       const payment = new Payment({
         movement_id: rejectedMovement._id,
         payment_method: "credit card",
-        card_id: user_card, // Usar el card_id del usuario para referencia
+        card_id: user_card,
         paid: false,
       });
 
@@ -107,10 +116,7 @@ exports.purchaseTicket = async (req, res) => {
         payment: new PaymentDTO(payment),
       });
     }
-  }
-
-  // Caso 1: El usuario no tiene tarjeta -> Pago en efectivo
-  if (!user_card) {
+  } else if (!user_card) {
     const purchasedMovement = new Movement({
       user_id,
       show_id,
@@ -148,7 +154,6 @@ exports.purchaseTicket = async (req, res) => {
     });
   }
 
-  // Caso 3: Tarjeta válida -> Pago exitoso
   const movementOnHold = new Movement({
     user_id,
     show_id,
@@ -165,7 +170,6 @@ exports.purchaseTicket = async (req, res) => {
     return res.status(500).json({ message: "Error creating movement." });
   }
 
-  // Cambiar el estado del movimiento a "purchased"
   movementOnHold.status = "purchased";
 
   const { err: movementUpdateErr } = await handleAsync(() =>
