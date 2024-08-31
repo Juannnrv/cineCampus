@@ -264,3 +264,110 @@
     }
   }
   ```
+## 3. Seat Allocation
+
+### Book a Ticket
+
+**URL:** `http://localhost:5000/tickets/book/v1`
+
+**Method:** POST
+
+**Auth:** True
+
+**Description:** Allows a user to book seats for a specific show. If all selected seats are available, the booking is confirmed and the seats are marked as unavailable. If any of the selected seats are not available, the booking is placed on hold, and the seats remain available.
+
+**Preconditions:** The user must be registered, and the show must exist with available seats.
+
+**Request Body Parameters:**
+
+- **user_id (required):** The ID of the user making the booking.
+- **show_id (required):** The ID of the show for which the booking is being made.
+- **date_movement (required):** The date and time of the booking in ISO 8601 format.
+- **seats (required):** An array of seat identifiers the user wishes to book.
+- **description (optional):** Optional description for the booking.
+
+**Responses:**
+
+- **200 - On Hold:**
+
+  **Description:** Some or all of the selected seats are not available. The booking is put on hold, and the seats remain available.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "The following seats are not available: A1, B2. Your booking is on hold.",
+    "ticket": {
+      "id": "647cdefcd5d8a030b0d2e4f2",
+      "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+      "show_id": "79d0c4e68b819589635a1eb0",
+      "date_movement": "2024-09-07T17:00:00Z",
+      "status": "on Hold",
+      "seats": ["A1", "B2"],
+      "description": "Ticket booking on hold due to seat unavailability."
+    }
+  }
+  ```
+
+- **201 - Success:**
+
+  **Description:** All selected seats are available and successfully booked. The seats are marked as unavailable.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Ticket booked successfully.",
+    "ticket": {
+      "id": "647cdefcd5d8a030b0d2e4f3",
+      "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+      "show_id": "79d0c4e68b819589635a1eb0",
+      "date_movement": "2024-09-07T17:00:00Z",
+      "status": "booked",
+      "seats": ["A1", "B2"],
+      "description": "Ticket booked for show."
+    }
+  }
+  ```
+
+- **400 - Bad Request:**
+
+  **Description:** Invalid or missing request parameters, or some selected seats are not available.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "The following seats are not available: A1, B2."
+  }
+  ```
+
+- **404 - Not Found:**
+
+  **Description:** The specified user or show could not be found in the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User not found."
+  }
+  ```
+
+  ```
+  {
+    "message": "Show not found."
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while processing the request, typically related to database operations or server issues.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Error creating or updating movement."
+  }
+  ```
