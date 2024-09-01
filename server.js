@@ -5,6 +5,7 @@ const app = express();
 const movieRoutes = require("./server/routes/movieRoutes");
 const movementRoutes = require("./server/routes/movementRoutes");
 const showRoutes = require("./server/routes/showRoutes");
+const userRoutes = require("./server/routes/userRoutes");
 
 app.use(cors());
 app.use(express.json());
@@ -14,6 +15,7 @@ Database.getInstance();
 app.use('/movies', movieRoutes);
 app.use('/tickets', movementRoutes);
 app.use('/shows', showRoutes);
+app.use('/users', userRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
