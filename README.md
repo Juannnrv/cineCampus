@@ -434,3 +434,77 @@
     "message": "Error creating or updating movement."
   }
   ```
+### Cancel a Ticket
+
+**URL:** `http://localhost:5000/tickets/cancel/v1/:movement_id`
+
+**Method:** POST
+
+**Auth:** True
+
+**Description:** Cancels a booked or purchased ticket. The status of the ticket is updated to “cancelled” creating a new record of the cancellation and the associated seats become available for other bookings.
+
+**Preconditions:** The ticket with the given `movement_id` must exist. The show associated with the ticket must also exist.
+
+**Request Parameters:**
+
+- **movement_id (required):** The ID of the ticket that needs to be cancelled.
+
+**Responses:**
+
+- **200 - Success:**
+
+  **Description:** The ticket was successfully cancelled, and the seats were made available again.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Ticket cancelled successfully.",
+    "ticket": {
+      "id": "647cdefcd5d8a030b0d2e4f2",
+      "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+      "show_id": "79d0c4e68b819589635a1eb0",
+      "date_movement": "2024-09-07T17:00:00Z",
+      "status": "cancelled",
+      "seats": ["A1", "A2"],
+      "description": "Ticket was cancelled."
+    }
+  }
+  ```
+
+- **404 - Not Found:**
+
+  **Description:** The specified ticket or show could not be found in the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Ticket not found."
+  }
+  ```
+
+  ```
+  {
+    "message": "Show not found."
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while processing the request, typically related to database operations or server issues.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Error creating movement."
+  }
+  ```
+
+  ```
+  {
+    "message": "Error updating show seats."
+  }
+  ```
