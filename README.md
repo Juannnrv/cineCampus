@@ -78,7 +78,7 @@
 
   **Description:** No movies were found in the database.
 
-------
+---
 
 ### Get a Movie by ID
 
@@ -161,20 +161,25 @@
   {
     "message": "Ticket created successfully.",
     "ticket": {
-      "id": "647cdefcd5d8a030b0d2e4f2",
       "user_id": "64fcb97b7a6d9b2f40c5f3c8",
       "show_id": "79d0c4e68b819589635a1eb0",
       "date_movement": "2024-09-07T17:00:00Z",
       "status": "purchased",
       "seats": ["A1", "A2"],
       "description": "Ticket purchase for movie"
+      "id": "647cdefcd5d8a030b0d2e4f2",
     },
     "payment": {
-      "id": "647cdefcd5d8a030b0d2e4f3",
       "movement_id": "647cdefcd5d8a030b0d2e4f2",
       "payment_method": "credit card",
       "card_id": "64fd00ab7a6d9b2f40c5f3d2",
       "paid": true
+      "id": "647cdefcd5d8a030b0d2e4f3",
+    },
+    "card": {
+      "name": "Premium Card",
+      "validity": false,
+      "discount": 10
     }
   }
   ```
@@ -223,7 +228,7 @@
 
 **Auth:** True
 
-**Description:** Handles cases where a credit card provided does not match the user's credit card, resulting in a declined payment and the availability of the chosen seats becoming available again.
+**Description:** Handles cases where a credit card provided does not match the user's credit card or is invalid, resulting in a declined payment and the availability of the chosen seats becoming available again.
 
 **Preconditions:** The user must be registered, and the show must exist with available seats.
 
@@ -239,31 +244,66 @@
 
 - **400 - Bad Request:**
 
-  **Description:** The provided credit card does not belong to the user.
+  **Description:** The provided credit card does not belong to the user or is invalid.
 
-  **Example Response (JSON):**
+  **Example Response for Card does not belong the user (JSON):**
 
   ```
   {
     "message": "Card doesn't belong to you. Payment rejected.",
     "ticket": {
-      "id": "647cdefcd5d8a030b0d2e4f4",
       "user_id": "64fcb97b7a6d9b2f40c5f3ca",
       "show_id": "79d0c4e68b819589635a1eb0",
       "date_movement": "2024-09-07T17:00:00Z",
       "status": "rejected",
-      "seats": ["A1", "A2"],
+      "seats": [
+        "A1", 
+        "A2"
+        ],
       "description": "Card doesn't belong to you."
+      "id": "647cdefcd5d8a030b0d2e4f4",
     },
     "payment": {
-      "id": "647cdefcd5d8a030b0d2e4f5",
       "movement_id": "647cdefcd5d8a030b0d2e4f4",
       "payment_method": "credit card",
       "card_id": "64fd00ab7a6d9b2f40c5f3d2",
       "paid": false
-    }
+      "id": "647cdefcd5d8a030b0d2e4f5",
+    },
+    "card": {}
   }
   ```
+
+  **Example Response for Invalid Card (JSON):**
+
+  {
+    "message": "Card is not valid. Payment rejected.",
+    "ticket": {
+      "user_id": "64fcb97b7a6d9b2f40c5f3c8",
+      "show_id": "79d0c4e68b819589635a1eb0",
+      "date_movement": "2024-09-07T17:00:00.000Z",
+      "status": "rejected",
+      "seats": [
+      "A1",
+      "A2"
+      ],
+      "description": "Card is not valid.",
+      "id": "66d4a4a2c146980c2e8da3c8"
+    },
+    "payment": {
+      "movement_id": "66d4a4a2c146980c2e8da3c8",
+      "payment_method": "credit card",
+      "card_id": "64fd00ab7a6d9b2f40c5f3d2",
+      "paid": false,
+      "id": "66d4a4a2c146980c2e8da3cb"
+    },
+    "card": {
+      "name": "Premium Card",
+      "validity": false,
+      "discount": 10
+    }
+  }
+
 ### Get Available Seats
 
 **URL:** `http://localhost:5000/shows/seats/v1/:id`
@@ -434,6 +474,7 @@
     "message": "Error creating or updating movement."
   }
   ```
+
 ### Cancel a Ticket
 
 **URL:** `http://localhost:5000/tickets/cancel/v1/:movement_id`
