@@ -5,6 +5,8 @@ const MovementDTO = require("../dto/movementDto");
 const { handleAsync } = require("../middleware/handleAsync");
 const User = require("../models/user");
 const Show = require("../models/show");
+const Card = require("../models/card");
+const CardDTO = require("../dto/cardDto");
 
 /** 
  * @function purchaseTicket
@@ -66,29 +68,35 @@ exports.purchaseTicket = async (req, res) => {
 
   const user_card = user.card_id;
 
+  
   if (card_id) {
-    if (card_id.toString() !== user_card?.toString()) {
+    const { result: card, err: cardErr } = await handleAsync(() => Card.findById(user_card));
+  
+    if (cardErr || !card) {
+      return res.status(404).json({ message: "Card not found." });
+    }
+  
+    if (card_id.toString() !== user_card?.toString() || card.validity === false) {
       const rejectedMovement = new Movement({
         user_id,
         show_id,
         date_movement,
         status: "rejected",
         seats,
-        description: "Card doesn't belong to you.",
+        description: card_id.toString() !== user_card?.toString() ? "Card doesn't belong to you." : "Card is not valid.",
       });
-
+  
       show.available_seats.forEach((seatShow) => {
         if (seats.includes(seatShow.seat)) {
           seatShow.availability = true;
         }
       });
-
+  
       const { err: showSaveErr } = await handleAsync(() => show.save());
       if (showSaveErr) {
         return res.status(500).json({ message: "Error updating show seats." });
       }
-
-
+  
       const { err: rejectedMovementSaveErr } = await handleAsync(() =>
         rejectedMovement.save()
       );
@@ -97,23 +105,24 @@ exports.purchaseTicket = async (req, res) => {
           message: "Error creating rejected movement.",
         });
       }
-
+  
       const payment = new Payment({
         movement_id: rejectedMovement._id,
         payment_method: "credit card",
         card_id: user_card,
         paid: false,
       });
-
+  
       const { err: paymentSaveErr } = await handleAsync(() => payment.save());
       if (paymentSaveErr) {
         return res.status(500).json({ message: "Error updating payment." });
       }
-
+  
       return res.status(400).json({
-        message: "Card doesn't belong to you. Payment rejected.",
+        message: card_id.toString() !== user_card?.toString() ? "Card doesn't belong to you. Payment rejected." : "Card is not valid. Payment rejected.",
         ticket: new MovementDTO(rejectedMovement),
         payment: new PaymentDTO(payment),
+        card: card_id.toString() !== user_card?.toString() ? {} : new CardDTO(card),
       });
     }
   } else if (!user_card) {
@@ -191,10 +200,13 @@ exports.purchaseTicket = async (req, res) => {
     return res.status(500).json({ message: "Error updating payment." });
   }
 
+  const { result: cardFinal, err: cardErr } = await handleAsync(() => Card.findById(user_card));
+
   res.status(201).json({
     message: "Ticket created successfully.",
     ticket: new MovementDTO(movementOnHold),
     payment: new PaymentDTO(payment),
+    card: new CardDTO(cardFinal)
   });
 };
 
