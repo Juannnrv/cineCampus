@@ -549,3 +549,82 @@
     "message": "Error updating show seats."
   }
   ```
+## 5. User Management
+
+### Create a New User
+
+**URL:** `http://localhost:5000/users/v1/`
+
+**Method:** POST
+
+**Auth:** True
+
+**Description:** Creates a new user in the system. If the role is 'admin', a `card_id` must be provided. If a `card_id` is provided, the user is created as a VIP user. Otherwise, the user is created with a 'user' role.
+
+**Preconditions:** The requester must be registered as an admin.
+
+**Request Body Parameters:**
+
+- **name (required):** The name of the user.
+- **email (required):** The email of the user.
+- **phone (required):** The phone number of the user.
+- **password (required):** The password for the user account.
+- **card_id (optional):** The card ID for VIP users. If provided, the user will be created with the role 'userVIP'.
+- **role (required):** The role of the user (e.g., "user", "admin", "userVIP").
+
+**Example Request (JSON):**
+
+```
+{
+  "name": "Ivan",
+  "email": "ivan.castañeda@gmail.com",
+  "password": "Ivan",
+  "phone": "12345678910"
+}
+```
+
+**Responses:**
+
+- **201 - Created:**
+
+  **Description:** The user was successfully created.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User created successfully",
+    "user": {
+      "_id": "64d0c4e68b819589635a1eb2",
+      "name": "Ivan",
+      "email": "ivan.castañeda@gmail.com",
+      "phone": "12345678910",
+      "role": "user"
+    }
+  }
+  ```
+
+- **400 - Bad Request:**
+
+  **Description:** The request is missing required fields, or a required field does not meet the validation criteria. Additionally, if trying to create an admin without providing a `card_id`, this error will be returned.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Cannot create user with role 'admin' without a card_id"
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while trying to create the user in the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Error saving user",
+    "error": "Database connection failed"
+  }
+  ```
