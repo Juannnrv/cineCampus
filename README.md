@@ -628,3 +628,61 @@
     "error": "Database connection failed"
   }
   ```
+### Get User Details by ID
+
+**URL:** `http://localhost:5000/users/v1/{id}`
+
+**Method:** GET
+
+**Auth:** True
+
+**Description:** Retrieves the details of a user by their ID.
+
+**Preconditions:** The requester must be registered as an admin.
+
+**Path Parameters:**
+
+- **id (required):** The ID of the user whose details are to be retrieved.
+
+**Responses:**
+
+- **200 - Success:**
+
+  **Description:** The user details were successfully retrieved.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "_id": "64d0c4e68b819589635a1eb2",
+    "name": "Ivan",
+    "email": "ivan.castañeda@gmail.com",
+    "phone": "12345678910",
+    "role": "user"
+  }
+  ```
+
+- **404 - Not Found:**
+
+  **Description:** The provided ID does not match any user in the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User not found"
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while trying to retrieve the user details from the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User not found",
+    "error": "Database connection failed"
+  }
+  ```
