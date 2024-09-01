@@ -264,6 +264,69 @@
     }
   }
   ```
+### Get Available Seats
+
+**URL:** `http://localhost:5000/shows/seats/v1/:id`
+
+**Method:** GET
+
+**Auth:** False
+
+**Description:** Retrieves the available seats for a specific show. The response includes details of seats that are currently available, such as seat identifier, seat type, and price.
+
+**Preconditions:** The show must exist in the database.
+
+**Request Parameters:**
+
+- **id (required):** The ID of the show for which available seats are being retrieved.
+
+**Responses:**
+
+- **200 - Success:**
+
+  **Description:** Successfully retrieved the available seats for the specified show.
+
+  **Example Response (JSON):**
+
+  ```
+  [
+    {
+      "seat": "A1",
+      "seat_type": "Standard",
+      "price": 15.00
+    },
+    {
+      "seat": "A2",
+      "seat_type": "Standard",
+      "price": 15.00
+    }
+  ]
+  ```
+
+- **404 - Not Found:**
+
+  **Description:** The show with the specified ID could not be found.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Show not found."
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while retrieving the seats from the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Some error occurred while retrieving movies."
+  }
+  ```
+
 ## 3. Seat Allocation
 
 ### Book a Ticket
