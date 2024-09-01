@@ -32,11 +32,9 @@ exports.createUser = async (req, res) => {
   const cineDB = client.db("cineCampus");
 
   if (role === "admin" && !card_id) {
-    return res
-      .status(400)
-      .json({
-        message: "Cannot create user with role 'admin' without a card_id",
-      });
+    return res.status(400).json({
+      message: "Cannot create user with role 'admin' without a card_id",
+    });
   }
 
   if (role === "admin") {
@@ -121,12 +119,10 @@ exports.createUser = async (req, res) => {
         })
       );
     if (userVIPCommandError) {
-      return res
-        .status(500)
-        .json({
-          message: "Error creating userVIP in DB",
-          error: userVIPCommandError,
-        });
+      return res.status(500).json({
+        message: "Error creating userVIP in DB",
+        error: userVIPCommandError,
+      });
     }
 
     return res.status(201).json({
@@ -161,12 +157,10 @@ exports.createUser = async (req, res) => {
         })
       );
     if (userCommandError) {
-      return res
-        .status(500)
-        .json({
-          message: "Error creating user in DB",
-          error: userCommandError,
-        });
+      return res.status(500).json({
+        message: "Error creating user in DB",
+        error: userCommandError,
+      });
     }
 
     return res.status(201).json({
@@ -203,3 +197,100 @@ exports.getUsersDetails = async (req, res) => {
 
   return res.status(200).json(new UserDTO(user));
 };
+
+/**
+ * @function updateRole
+ * @description Update the role of a user based on the provided role and card_id. Ensures the card is valid before assigning it.
+ * @async
+ * @method
+ * @param {Object} req - HTTP request object containing the user data in `req.body` and user ID in `req.params`.
+ * @param {string} req.body.role - The new role of the user (e.g., "admin", "userVIP", "user").
+ * @param {string} req.body.card_id - The card ID associated with the user.
+ * @param {string} req.params.id - The ID of the user to update.
+ * @param {Object} res - HTTP response object to send the response to the client.
+ * @returns {void}
+ * @throws {Error} Throws an error if the role update fails.
+ * @response {Object} Responds with the updated user if successful.
+ * @response {Object} Responds with an error message if the update fails.
+ */
+exports.updateRole = async (req, res) => {
+    const { role, card_id } = req.body;
+    const { id } = req.params;
+  
+    console.log(role, card_id, id);
+  
+    const db = Database.getInstance();
+    const client = mongoose.connection.client;
+    const cineDB = client.db("cineCampus");
+  
+    const { result: user, error: userError } = await handleAsync(() => User.findById(id));
+  
+    
+    if (userError || !user) {
+        return res.status(404).json({ message: "User not found", error: userError });
+    }
+    
+    if ((role === "admin" || role === "userVIP") && !card_id) {
+        return res.status(400).json({ message: "Card ID is required for admin or userVIP roles" });
+    }
+    
+    let card = null;
+    if (card_id) {
+        const { result, error } = await handleAsync(() => Card.findById(card_id));
+        card = result;
+        if (error || !card) {
+            return res.status(404).json({ message: "Card not found", error });
+        } else if (card.validity === false) {
+            return res.status(400).json({ message: "Card is not valid" });
+        }
+    }
+    
+    let updateData = { role: "user", card_id: null };
+
+    console.log(user.name); 
+  
+    await cineDB.command({
+      revokeRolesFromUser: user.name, 
+      roles: [
+        { role: "adminCine", db: "cineCampus" },
+        { role: "userVIP", db: "cineCampus" },
+        { role: "user", db: "cineCampus" }
+      ],
+    });
+  
+    if (role === "admin") {
+      updateData = { role: "admin", card_id: card._id };
+      await cineDB.command({
+        grantRolesToUser: user.name, 
+        roles: [{ role: "adminCine", db: "cineCampus" }],
+      });
+    } else if (role === "userVIP") {
+      updateData = { role: "userVIP", card_id: card._id };
+      await cineDB.command({
+        grantRolesToUser: user.name, 
+        roles: [{ role: "userVIP", db: "cineCampus" }],
+      });
+    } else if (role === "user") {
+      updateData = { role: "user", card_id: null };
+      await cineDB.command({
+        grantRolesToUser: user.name, 
+        roles: [{ role: "user", db: "cineCampus" }],
+      });
+    }
+  
+    const { result: updatedUser, error: updateUserError } = await handleAsync(() =>
+      User.findOneAndUpdate({ _id: id }, updateData, {
+        new: true,
+        runValidators: true,
+      })
+    );
+  
+    if (updateUserError || !updatedUser) {
+      return res.status(404).json({ message: "User not found", error: updateUserError });
+    }
+  
+    return res.status(200).json({
+      message: `${updatedUser.role} updated successfully`,
+      user: new UserDTO(updatedUser),
+    });
+  };
