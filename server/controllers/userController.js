@@ -32,7 +32,11 @@ exports.createUser = async (req, res) => {
   const cineDB = client.db("cineCampus");
 
   if (role === "admin" && !card_id) {
-    return res.status(400).json({ message: "Cannot create user with role 'admin' without a card_id" });
+    return res
+      .status(400)
+      .json({
+        message: "Cannot create user with role 'admin' without a card_id",
+      });
   }
 
   if (role === "admin") {
@@ -44,26 +48,31 @@ exports.createUser = async (req, res) => {
       role: "admin",
     });
 
-    const { result: newAdmin, error: newAdminError } = await handleAsync(() => admin.save());
+    const { result: newAdmin, error: newAdminError } = await handleAsync(() =>
+      admin.save()
+    );
 
     if (newAdminError || !newAdmin) {
       console.error("Error saving admin:", newAdminError);
-      
+
       return res.status(500).json({
         message: "Error saving admin",
         error: newAdminError,
       });
     }
 
-    const { result: adminCommandResult, error: adminCommandError } = await handleAsync(() => cineDB.command({
-      createUser: newAdmin.name,
-      pwd: newAdmin.password,
-      roles: [{ role: "adminCine", db: "cineCampus" }],
-    }));
+    const { result: adminCommandResult, error: adminCommandError } =
+      await handleAsync(() =>
+        cineDB.command({
+          createUser: newAdmin.name,
+          pwd: newAdmin.password,
+          roles: [{ role: "adminCine", db: "cineCampus" }],
+        })
+      );
 
     if (adminCommandError) {
       console.error("Error creating admin in DB:", adminCommandError);
-      
+
       await handleAsync(() => User.findByIdAndDelete(newAdmin._id));
       return res.status(500).json({
         message: "Error creating admin in DB",
@@ -78,7 +87,9 @@ exports.createUser = async (req, res) => {
   }
 
   if (card_id) {
-    const { result: card, error: cardError } = await handleAsync(() => Card.findById(card_id));
+    const { result: card, error: cardError } = await handleAsync(() =>
+      Card.findById(card_id)
+    );
     if (cardError || !card) {
       console.log({ message: "Card not found", error: cardError });
     }
@@ -92,18 +103,30 @@ exports.createUser = async (req, res) => {
       card_id,
     });
 
-    const { result: newUserVIP, error: userVIPSaveError } = await handleAsync(() => userVIP.save());
+    const { result: newUserVIP, error: userVIPSaveError } = await handleAsync(
+      () => userVIP.save()
+    );
     if (userVIPSaveError || !newUserVIP) {
-      return res.status(500).json({ message: "Error saving userVIP", error: userVIPSaveError });
+      return res
+        .status(500)
+        .json({ message: "Error saving userVIP", error: userVIPSaveError });
     }
 
-    const { result: userVIPCommandResult, error: userVIPCommandError } = await handleAsync(() => cineDB.command({
-      createUser: newUserVIP.name,
-      pwd: newUserVIP.password,
-      roles: [{ role: "userVIP", db: "cineCampus" }],
-    }));
+    const { result: userVIPCommandResult, error: userVIPCommandError } =
+      await handleAsync(() =>
+        cineDB.command({
+          createUser: newUserVIP.name,
+          pwd: newUserVIP.password,
+          roles: [{ role: "userVIP", db: "cineCampus" }],
+        })
+      );
     if (userVIPCommandError) {
-      return res.status(500).json({ message: "Error creating userVIP in DB", error: userVIPCommandError });
+      return res
+        .status(500)
+        .json({
+          message: "Error creating userVIP in DB",
+          error: userVIPCommandError,
+        });
     }
 
     return res.status(201).json({
@@ -120,18 +143,30 @@ exports.createUser = async (req, res) => {
       role: "user",
     });
 
-    const { result: newUser, error: userSaveError } = await handleAsync(() => user.save());
+    const { result: newUser, error: userSaveError } = await handleAsync(() =>
+      user.save()
+    );
     if (userSaveError || !newUser) {
-      return res.status(500).json({ message: "Error saving user", error: userSaveError });
+      return res
+        .status(500)
+        .json({ message: "Error saving user", error: userSaveError });
     }
 
-    const { result: userCommandResult, error: userCommandError } = await handleAsync(() => cineDB.command({
-      createUser: newUser.name,
-      pwd: newUser.password,
-      roles: [{ role: "user", db: "cineCampus" }],
-    }));
+    const { result: userCommandResult, error: userCommandError } =
+      await handleAsync(() =>
+        cineDB.command({
+          createUser: newUser.name,
+          pwd: newUser.password,
+          roles: [{ role: "user", db: "cineCampus" }],
+        })
+      );
     if (userCommandError) {
-      return res.status(500).json({ message: "Error creating user in DB", error: userCommandError });
+      return res
+        .status(500)
+        .json({
+          message: "Error creating user in DB",
+          error: userCommandError,
+        });
     }
 
     return res.status(201).json({
@@ -139,4 +174,32 @@ exports.createUser = async (req, res) => {
       user: new UserDTO(newUser),
     });
   }
+};
+
+/**
+ * @function getUsersDetails
+ * @description Retrieve the details of a user by their ID.
+ * @async
+ * @method
+ * @param {Object} req - HTTP request object containing the user ID in `req.params`.
+ * @param {string} req.params.id - The ID of the user to retrieve.
+ * @param {Object} res - HTTP response object to send the response to the client.
+ * @returns {void}
+ * @throws {Error} Throws an error if the user retrieval fails.
+ * @response {Object} Responds with the user details if successful.
+ * @response {Object} Responds with an error message if the user is not found or retrieval fails.
+ */
+exports.getUsersDetails = async (req, res) => {
+  const { id } = req.params;
+
+  const { result: user, error: userError } = await handleAsync(() =>
+    User.findById(id)
+  );
+  if (userError || !user) {
+    return res
+      .status(404)
+      .json({ message: "User not found", error: userError });
+  }
+
+  return res.status(200).json(new UserDTO(user));
 };
