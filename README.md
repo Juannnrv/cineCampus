@@ -650,3 +650,242 @@
     "message": "Error updating show seats."
   }
   ```
+## 5. User Management
+
+### Create a New User
+
+**URL:** `http://localhost:5000/users/v1/`
+
+**Method:** POST
+
+**Auth:** True
+
+**Description:** Creates a new user in the system. If the role is 'admin', a `card_id` must be provided. If a `card_id` is provided, the user is created as a VIP user. Otherwise, the user is created with a 'user' role.
+
+**Preconditions:** The requester must be registered as an admin.
+
+**Request Body Parameters:**
+
+- **name (required):** The name of the user.
+- **email (required):** The email of the user.
+- **phone (required):** The phone number of the user.
+- **password (required):** The password for the user account.
+- **card_id (optional):** The card ID for VIP users. If provided, the user will be created with the role 'userVIP'.
+- **role (required):** The role of the user (e.g., "user", "admin", "userVIP").
+
+**Example Request (JSON):**
+
+```
+{
+  "name": "Ivan",
+  "email": "ivan.castañeda@gmail.com",
+  "password": "Ivan",
+  "phone": "12345678910"
+}
+```
+
+**Responses:**
+
+- **201 - Created:**
+
+  **Description:** The user was successfully created.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User created successfully",
+    "user": {
+      "_id": "64d0c4e68b819589635a1eb2",
+      "name": "Ivan",
+      "email": "ivan.castañeda@gmail.com",
+      "phone": "12345678910",
+      "role": "user"
+    }
+  }
+  ```
+
+- **400 - Bad Request:**
+
+  **Description:** The request is missing required fields, or a required field does not meet the validation criteria. Additionally, if trying to create an admin without providing a `card_id`, this error will be returned.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Cannot create user with role 'admin' without a card_id"
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while trying to create the user in the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Error saving user",
+    "error": "Database connection failed"
+  }
+  ```
+### Get User Details by ID or Filter by Role
+
+**URL:** `http://localhost:5000/users/v1`
+
+**Method:** GET
+
+**Auth:** True
+
+**Description:** Retrieves the details of a user by their ID or filters users by role.
+
+**Preconditions:** The requester must be registered as an admin.
+
+**Path Parameters:**
+
+- **id (optional):** The ID of the user whose details are to be retrieved.
+
+**Request Body:**
+
+- **role (optional):** The role to filter users by.
+
+**Responses:**
+
+- **200 - Success:**
+
+  **Description:** The user details were successfully retrieved or users were successfully filtered by role.
+
+  **Example Response for Single User (JSON):**
+
+  ```
+  {
+    "_id": "64d0c4e68b819589635a1eb2",
+    "name": "Ivan",
+    "email": "ivan.castañeda@gmail.com",
+    "phone": "12345678910",
+    "role": "user"
+  }
+  ```
+
+  **Example Response for Multiple Users (JSON):**
+
+  ```
+  [
+    {
+      "_id": "64d0c4e68b819589635a1eb2",
+      "name": "Ivan",
+      "email": "ivan.castañeda@gmail.com",
+      "phone": "12345678910",
+      "role": "user"
+    },
+    {
+      "_id": "64d0c4e68b819589635a1eb3",
+      "name": "Maria",
+      "email": "maria.gomez@gmail.com",
+      "phone": "0987654321",
+      "role": "user"
+    }
+  ]
+  ```
+
+  **400 - Bad Request:**
+
+  **Description:** Neither ID nor role was provided in the request.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "ID or role is required"
+  }	
+  ```
+
+  **404 - Not Found:**
+
+  **Description:** The provided ID does not match any user in the database or no users match the provided role.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User(s) not found"
+  }
+  ```
+
+  **500 - Internal Server Error:**
+
+  **Description:** An error occurred while trying to retrieve the user details from the database.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User(s) not found",
+    "error": "Database connection failed"
+  }
+  ```
+  
+### Update User Role
+
+**URL:** `http://localhost:5000/users/v1/{id}
+
+**Method:** PUT
+
+**Auth:** True
+
+**Description:** Updates the role of a user based on the provided role and card_id. Ensures the card is valid before assigning it.
+
+**Preconditions:** The user must be registered as an admin.
+
+**Path Parameters:**
+
+- **id (required):** The ID of the user to update.
+
+**Request Body:**
+
+- **role (required):** The new role of the user (e.g., "admin", "userVIP", "user").
+- **card_id (optional):** The card ID associated with the user, required for roles "admin" and "userVIP".
+
+**Example Request:**
+
+```
+{
+  "role": "userVIP",
+  "card_id": "64fd00ab7a6d9b2f40c5f3d4"
+}
+```
+
+**Responses:**
+
+- **200 - Success:**
+
+  **Description:** The user's role was successfully updated.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "userVIP updated successfully",
+    "user": {
+      "_id": "66d4d7a6d17889f49bfdcbfe",
+      "name": "Jhon",
+      "email": "jhon.lopez@gmail.com",
+      "phone": "12345678910",
+      "password": "Jhon",
+      "role": "userVIP",
+      "card_id": "64fd00ab7a6d9b2f40c5f3d4"
+    }
+  }
+  ```
+
+- **404 - Not Found:**
+
+  **Description:** The provided user ID does not exist or the card ID is not found.
+
+- **400 - Bad Request:**
+
+  **Description:** Missing required data or invalid card ID provided.
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while updating the user's role.
