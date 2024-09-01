@@ -259,7 +259,7 @@ exports.bookTicket = async (req, res) => {
         seatShow.availability = false;
       }
     });
-    
+
     const { err: showSaveErr } = await handleAsync(() => show.save());
     if (showSaveErr) {
       return res.status(500).json({ message: "Error updating show seats." });
@@ -285,4 +285,66 @@ exports.bookTicket = async (req, res) => {
       ticket: new MovementDTO(movementBooked),
     });
   }
+}
+
+/**
+ * @function cancelTicket
+ * @description Cancel a booked or purchased ticket. If the ticket exists, it is cancelled and the seats are made available again.
+ * @async
+ * @method
+ * @param {Object} req - HTTP request object containing the ticket id in `req.params`.
+ * @param {Object} res - HTTP response object to send the response to the client.
+ * @returns {void}
+ * @throws {Error} Throws an error if the ticket cancellation fails.
+ * @response {Object} Responds with the cancelled ticket if successful.
+ * @response {Object} Responds with an error message if the cancellation fails.
+ */
+exports.cancelTicket = async (req, res) => {
+  const { movement_id } = req.params;
+  const { result: movement, err: movementErr } = await handleAsync(() =>
+    Movement.findById(movement_id));
+
+  let movementCancelled;
+
+  if (movementErr || !movement) {
+    return res.status(404).json({ message: "Ticket not found." });
+  }
+  else {
+    movementCancelled = new Movement({
+      user_id: movement.user_id,
+      show_id: movement.show_id,
+      date_movement: movement.date_movement,
+      status: "cancelled",
+      seats: movement.seats,
+      description: "Ticket was cancelled.",
+    });
+
+    const { err: movementSaveErr } = await handleAsync(() => movementCancelled.save());
+
+    if (movementSaveErr) {
+      return res.status(500).json({ message: "Error creating movement." });
+    }
+  }
+
+  const { result: show, err: showErr } = await handleAsync(() => Show.findById(movement.show_id));
+
+  if (showErr || !show) {
+    return res.status(404).json({ message: "Show not found." });
+  }
+
+  show.available_seats.forEach((seatShow) => {
+    if (movement.seats.includes(seatShow.seat)) {
+      seatShow.availability = true;
+    }
+  });
+
+  const { err: showSaveErr } = await handleAsync(() => show.save());
+
+  if (showSaveErr) {
+    return res.status(500).json({ message: "Error updating show seats." });
+  }
+
+  const movementFinal = new MovementDTO(movementCancelled);
+
+  res.status(201).json({ message: "Ticket cancelled successfully.", ticket: movementFinal });
 }
