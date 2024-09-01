@@ -686,3 +686,67 @@
     "error": "Database connection failed"
   }
   ```
+### Update User Role
+
+**URL:** `http://localhost:5000/users/v1/{id}
+
+**Method:** PUT
+
+**Auth:** True
+
+**Description:** Updates the role of a user based on the provided role and card_id. Ensures the card is valid before assigning it.
+
+**Preconditions:** The user must be registered as an admin.
+
+**Path Parameters:**
+
+- **id (required):** The ID of the user to update.
+
+**Request Body:**
+
+- **role (required):** The new role of the user (e.g., "admin", "userVIP", "user").
+- **card_id (optional):** The card ID associated with the user, required for roles "admin" and "userVIP".
+
+**Example Request:**
+
+```
+{
+  "role": "userVIP",
+  "card_id": "64fd00ab7a6d9b2f40c5f3d4"
+}
+```
+
+**Responses:**
+
+- **200 - Success:**
+
+  **Description:** The user's role was successfully updated.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "userVIP updated successfully",
+    "user": {
+      "_id": "66d4d7a6d17889f49bfdcbfe",
+      "name": "Jhon",
+      "email": "jhon.lopez@gmail.com",
+      "phone": "12345678910",
+      "password": "Jhon",
+      "role": "userVIP",
+      "card_id": "64fd00ab7a6d9b2f40c5f3d4"
+    }
+  }
+  ```
+
+- **404 - Not Found:**
+
+  **Description:** The provided user ID does not exist or the card ID is not found.
+
+- **400 - Bad Request:**
+
+  **Description:** Missing required data or invalid card ID provided.
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while updating the user's role.
