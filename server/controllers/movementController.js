@@ -6,6 +6,7 @@ const { handleAsync } = require("../middleware/handleAsync");
 const User = require("../models/user");
 const Show = require("../models/show");
 const Card = require("../models/card");
+const CardDTO = require("../dto/cardDto");
 
 /** 
  * @function purchaseTicket
@@ -199,10 +200,13 @@ exports.purchaseTicket = async (req, res) => {
     return res.status(500).json({ message: "Error updating payment." });
   }
 
+  const { result: cardFinal, err: cardErr } = await handleAsync(() => Card.findById(user_card));
+
   res.status(201).json({
     message: "Ticket created successfully.",
     ticket: new MovementDTO(movementOnHold),
     payment: new PaymentDTO(payment),
+    card: new CardDTO(cardFinal)
   });
 };
 
