@@ -172,11 +172,12 @@ exports.createUser = async (req, res) => {
 
 /**
  * @function getUsersDetails
- * @description Retrieve the details of a user by their ID.
+ * @description Retrieve user details by ID or filter users by role.
  * @async
  * @method
- * @param {Object} req - HTTP request object containing the user ID in `req.params`.
- * @param {string} req.params.id - The ID of the user to retrieve.
+ * @param {Object} req - HTTP request object containing the user ID in `req.params` or role in `req.body`.
+ * @param {string} [req.params.id] - The ID of the user to retrieve.
+ * @param {string} [req.body.role] - The role to filter users by.
  * @param {Object} res - HTTP response object to send the response to the client.
  * @returns {void}
  * @throws {Error} Throws an error if the user retrieval fails.
@@ -184,19 +185,33 @@ exports.createUser = async (req, res) => {
  * @response {Object} Responds with an error message if the user is not found or retrieval fails.
  */
 exports.getUsersDetails = async (req, res) => {
-  const { id } = req.params;
-
-  const { result: user, error: userError } = await handleAsync(() =>
-    User.findById(id)
-  );
-  if (userError || !user) {
-    return res
-      .status(404)
-      .json({ message: "User not found", error: userError });
-  }
-
-  return res.status(200).json(new UserDTO(user));
-};
+    const { id } = req.params;
+    const { role } = req.body;
+  
+    let query;
+    if (id) {
+      query = User.findById(id);
+    } else if (role) {
+      query = User.aggregate([
+        { $match: { role } },
+        { $sort: { name: 1 } },
+      ]);
+    } else {
+      return res.status(400).json({ message: "ID or role is required" });
+    }
+  
+    const { result: users, error: userError } = await handleAsync(() => query.exec());
+  
+    if (userError || !users || (Array.isArray(users) && users.length === 0)) {
+      return res.status(404).json({ message: "User(s) not found", error: userError });
+    }
+  
+    if (id) {
+      return res.status(200).json(new UserDTO(users));
+    } else {
+      return res.status(200).json(users.map(user => new UserDTO(user)));
+    }
+  };
 
 /**
  * @function updateRole

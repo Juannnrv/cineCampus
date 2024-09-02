@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post('/v1', createUser, validate, userValidator());
 router.get('/v1/:id', getUsersDetails);
+router.get('/v1', getUsersDetails);
 router.put('/v1/:id', updateRole, validate, userValidator());
 
 module.exports = router;
