@@ -1,5 +1,69 @@
 # Cine campus
 
+CineCampus is an innovative platform designed to transform the movie-going experience. Aiming to offer a complete and personalized experience, allowing users to select movies, purchase tickets, assign seats and take advantage of exclusive discounts.
+
+## Login
+
+**URL:** `http://localhost:5000/login/v1`
+
+**Method:** POST
+
+**Auth**: None
+
+**Description:**  This endpoint authenticates a user using their credentials (username and password) and returns a JWT token. This token must be included in the `Authorization` header with the format `Bearer <token>` to access protected routes in the API.   
+
+**Preconditions:** None. User must provide valid credentials.
+
+**Request Body (JSON):**
+
+```
+{
+  "name": "Bob Johnson",
+  "password": "Bob"
+}
+```
+
+**Responses:**
+
+- **200 - Success:**
+
+  **Description:** User has been authenticated successfully, and a JWT token has been generated.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Logged on",
+    "token": <token>
+  }
+  ```
+
+- **400 - Bad Request:**
+
+  **Description:** The request is missing required fields or the credentials are incorrect.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "missing credentials" // or "User not found" / "Invalid password"
+  }
+  ```
+
+- **500 - Internal Server Error:**
+
+  **Description:** An error occurred while processing the request or finding the user.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "Error finding user"
+  }
+  ```
+
+
+
 ## 1. Movie selection
 
 ### Get all movies
@@ -12,7 +76,7 @@
 
 **Description:** Retrieves a list of all movies in the database, including their associated show details.
 
-**Preconditions:** The user must be registered.
+**Preconditions:** The user must be registered and authenticated with a valid JWT
 
 **Responses:**
 
@@ -88,7 +152,7 @@
 
 **Description:** Retrieves the details of a specific movie by the provided ID.
 
-**Preconditions:** The user must be registered.
+**Preconditions:** The user must be registered and authenticated with a valid JWT
 
 **Path Parameters:**
 
@@ -139,7 +203,7 @@
 
 **Description:** Allows a user to purchase a ticket for a specific show. Depending on whether a credit card is provided, the ticket may be paid immediately or handled as a cash transaction.
 
-**Preconditions:** The user must be registered, and the show must exist with available seats.
+**Preconditions:** The user must be registered and authenticated with a valid JWT, be careful the show must exist with available seats.
 
 **Request Body Parameters:**
 
@@ -297,7 +361,7 @@
 
 **Description:** Handles cases where a credit card provided does not match the user's credit card or is invalid, resulting in a declined payment and the availability of the chosen seats becoming available again.
 
-**Preconditions:** The user must be registered, and the show must exist with available seats.
+**Preconditions:** The user must be registered and authenticated with a valid JWT, and the show must exist with available seats.
 
 **Request Body Parameters:**
 
@@ -415,7 +479,7 @@
 
 **Description:** Retrieves the available seats for a specific show. The response includes details of seats that are currently available, such as seat identifier, seat type, and price.
 
-**Preconditions:** The show must exist in the database.
+**Preconditions:** The user must be registered and authenticated with a valid JWT, and the show must exist in the database.
 
 **Request Parameters:**
 
@@ -480,7 +544,7 @@
 
 **Description:** Allows a user to book seats for a specific show. If all selected seats are available, the booking is confirmed and the seats are marked as unavailable. If any of the selected seats are not available, the booking is placed on hold, and the seats remain available.
 
-**Preconditions:** The user must be registered, and the show must exist with available seats.
+**Preconditions:** The user must be registered and authenticated with a valid JWT, and the show must exist with available seats.
 
 **Request Body Parameters:**
 
@@ -586,7 +650,7 @@
 
 **Description:** Cancels a booked or purchased ticket. The status of the ticket is updated to “cancelled” creating a new record of the cancellation and the associated seats become available for other bookings.
 
-**Preconditions:** The ticket with the given `movement_id` must exist. The show associated with the ticket must also exist.
+**Preconditions:** The user must be registered and authenticated with a valid JWT, and the ticket with the given `movement_id` must exist. The show associated with the ticket must also exist.
 
 **Request Parameters:**
 
@@ -662,7 +726,7 @@
 
 **Description:** Creates a new user in the system. If the role is 'admin', a `card_id` must be provided. If a `card_id` is provided, the user is created as a VIP user. Otherwise, the user is created with a 'user' role.
 
-**Preconditions:** The requester must be registered as an admin.
+**Preconditions:** The user must be registered as an admin and authenticated with a valid JWT.
 
 **Request Body Parameters:**
 
@@ -739,7 +803,7 @@
 
 **Description:** Retrieves the details of a user by their ID or filters users by role.
 
-**Preconditions:** The requester must be registered as an admin.
+**Preconditions:** The user must be registered as an admin and authenticated with a valid JWT.
 
 **Path Parameters:**
 
@@ -835,7 +899,7 @@
 
 **Description:** Updates the role of a user based on the provided role and card_id. Ensures the card is valid before assigning it.
 
-**Preconditions:** The user must be registered as an admin.
+**Preconditions:** The user must be registered as an admin and authenticated with a valid JWT.
 
 **Path Parameters:**
 

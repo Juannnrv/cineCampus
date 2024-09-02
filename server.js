@@ -6,12 +6,17 @@ const movieRoutes = require("./server/routes/movieRoutes");
 const movementRoutes = require("./server/routes/movementRoutes");
 const showRoutes = require("./server/routes/showRoutes");
 const userRoutes = require("./server/routes/userRoutes");
+const authRoutes = require("./server/routes/authRoutes");
+const authenticate = require("./server/middleware/authMiddleware");
 
 app.use(cors());
 app.use(express.json());
 
 Database.getInstance();
 
+app.use('/login', authRoutes);
+
+app.use(authenticate);
 app.use('/movies', movieRoutes);
 app.use('/tickets', movementRoutes);
 app.use('/shows', showRoutes);
