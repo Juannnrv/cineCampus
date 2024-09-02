@@ -628,29 +628,33 @@
     "error": "Database connection failed"
   }
   ```
-### Get User Details by ID
+### Get User Details by ID or Filter by Role
 
-**URL:** `http://localhost:5000/users/v1/{id}`
+**URL:** `http://localhost:5000/users/v1`
 
 **Method:** GET
 
 **Auth:** True
 
-**Description:** Retrieves the details of a user by their ID.
+**Description:** Retrieves the details of a user by their ID or filters users by role.
 
 **Preconditions:** The requester must be registered as an admin.
 
 **Path Parameters:**
 
-- **id (required):** The ID of the user whose details are to be retrieved.
+- **id (optional):** The ID of the user whose details are to be retrieved.
+
+**Request Body:**
+
+- **role (optional):** The role to filter users by.
 
 **Responses:**
 
 - **200 - Success:**
 
-  **Description:** The user details were successfully retrieved.
+  **Description:** The user details were successfully retrieved or users were successfully filtered by role.
 
-  **Example Response (JSON):**
+  **Example Response for Single User (JSON):**
 
   ```
   {
@@ -662,19 +666,52 @@
   }
   ```
 
-- **404 - Not Found:**
+  **Example Response for Multiple Users (JSON):**
 
-  **Description:** The provided ID does not match any user in the database.
+  ```
+  [
+    {
+      "_id": "64d0c4e68b819589635a1eb2",
+      "name": "Ivan",
+      "email": "ivan.castañeda@gmail.com",
+      "phone": "12345678910",
+      "role": "user"
+    },
+    {
+      "_id": "64d0c4e68b819589635a1eb3",
+      "name": "Maria",
+      "email": "maria.gomez@gmail.com",
+      "phone": "0987654321",
+      "role": "user"
+    }
+  ]
+  ```
+
+  **400 - Bad Request:**
+
+  **Description:** Neither ID nor role was provided in the request.
 
   **Example Response (JSON):**
 
   ```
   {
-    "message": "User not found"
+    "message": "ID or role is required"
+  }	
+  ```
+
+  **404 - Not Found:**
+
+  **Description:** The provided ID does not match any user in the database or no users match the provided role.
+
+  **Example Response (JSON):**
+
+  ```
+  {
+    "message": "User(s) not found"
   }
   ```
 
-- **500 - Internal Server Error:**
+  **500 - Internal Server Error:**
 
   **Description:** An error occurred while trying to retrieve the user details from the database.
 
@@ -682,10 +719,11 @@
 
   ```
   {
-    "message": "User not found",
+    "message": "User(s) not found",
     "error": "Database connection failed"
   }
   ```
+  
 ### Update User Role
 
 **URL:** `http://localhost:5000/users/v1/{id}
