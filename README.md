@@ -2,6 +2,140 @@
 
 CineCampus is an innovative platform designed to transform the movie-going experience. Aiming to offer a complete and personalized experience, allowing users to select movies, purchase tickets, assign seats and take advantage of exclusive discounts.
 
+**Versión**: 1.0.0
+
+**Author**: Juan Rosas
+
+**Licency**: ISC
+
+------
+
+### System Requirements
+
+To run this project, you need to have Node.js and npm installed on your machine. You can download Node.js from [nodejs.org](https://nodejs.org/), which includes npm.
+
+------
+
+### Dependencys
+
+The project uses the following Node.js dependencies:
+
+- `cors`
+
+  : ^2.8.5
+
+  - Allows the configuration of CORS (Cross-Origin Resource Sharing) on the server.
+
+- `express`
+
+  : ^4.19.2
+
+  - Framework for building web applications and APIs.
+
+- `express-validator`
+
+  : ^7.2.0
+
+  - Tool to validate and sanitize user entries in Express.
+
+- `jsonwebtoken`
+
+  : ^9.0.2
+
+  - For the creation and verification of JSON Web Tokens (JWT).
+
+- `mongodb`
+
+  : ^6.8.0
+
+  - Native MongoDB client for Node.js.
+
+- `mongoose`
+
+  : ^8.5.5
+
+  - ODM (Object Data Modeling) for MongoDB, which facilitates interaction with the database.
+
+- `passport`
+
+  : ^0.7.0
+
+  - Node.js authentication middleware.
+
+- `passport-jwt`
+
+  : ^4.0.1
+
+  - Passport strategy for authentication using JSON Web Tokens.
+
+- `passport-local`
+
+  : ^1.0.0
+
+  - Passport strategy for local authentication (name and password).
+
+- `socket.io`
+
+  : ^4.7.5
+
+  - Library for real-time communication based on websockets.
+
+------
+
+### Scripts
+
+- `dev`: 
+
+  ```
+  node --env-file .env --watch server.js
+  ```
+
+  - Start the server in development mode, observing changes in the `server.js` file.
+
+------
+
+### Enviroments variables 
+
+To connect the application to the database and configure other sensitive parameters, you must create an `.env` file in the root of the project. Here is an example of environment variables you might need:
+```
+# MongoDB protocol and URI configuration
+MONGO_PROTOCOLO=mongodb://
+MONGO_USER=juan
+MONGO_PSW=juan122
+MONGO_HOST=172.16.102.69
+MONGO_PORT=27017
+MONGO_DB_NAME=cineCampus
+
+# Secret key to JWT
+JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
+
+```
+
+### How to Configure
+
+1. **Clone the repository**:
+
+   ```
+   git clone <url_del_repositorio>
+   ```
+
+2. **Install dependencies**:
+
+   ```
+   npm install
+   ```
+
+3. **Set environment variables**:
+
+   Create an `.env` file in the root of the project and add the necessary environment variables (see previous section).
+
+4. **Starts the server in development mode**:
+
+   ```
+   npm run dev
+   ```
+
+
 ## Login
 
 **URL:** `http://localhost:5000/login/v1`
@@ -62,6 +196,9 @@ CineCampus is an innovative platform designed to transform the movie-going exper
   }
   ```
 
+## Database schema
+  
+![image](https://github.com/user-attachments/assets/28c15e88-6f65-4876-ad7e-6f5c75571c08)
 
 
 ## 1. Movie selection
