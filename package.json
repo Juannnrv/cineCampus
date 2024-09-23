@@ -3,14 +3,18 @@
   "description": "",
   "version": "1.0.0",
   "main": "server.js",
-  "type": "commonjs",
   "scripts": {
-    "dev": "node --env-file .env --watch server.js"
+    "dev:front": "vite",
+    "dev:back": "node --env-file .env --watch server.js",
+    "dev": "concurrently \"npm run dev:front\" \"npm run dev:back\"",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "concurrently": "^9.0.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-validator": "^7.2.0",
@@ -20,6 +24,15 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "vue": "^3.4.37",
+    "vue-router": "^4.0.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "vite": "^5.4.1"
   }
 }
