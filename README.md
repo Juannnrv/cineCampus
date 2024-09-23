@@ -152,8 +152,8 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 
 ```
 {
-  "name": "Bob Johnson",
-  "password": "Bob"
+  "name": "Gengar@example.com",
+  "password": "Gengar"
 }
 ```
 

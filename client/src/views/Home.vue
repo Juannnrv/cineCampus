@@ -1,23 +1,20 @@
 <template>
   <div
-    class="h-screen w-screen flex flex-col justify-center items-center bg-gray-50"
+    class="h-screen w-screen flex flex-col justify-center items-center bg-color-1"
   >
-    <img class="max-w-full h-auto mb-16" src="../assets/img/bigStar.svg" />
-    <h1 class="text-4xl font-poppins font-bold text-gray-800 mb-3.5">
-      Explore the app
+    <img class="w-64 h-auto mb-16" src="../assets/img/popcorn.png" />
+    <h1 class="text-4xl font-poppins font-bold text-color-3 mb-5">
+      Cine Campus
     </h1>
     <p
-      class="text-lg font-inter font-regular text-slate-950 w-80 text-center mb-16"
+      class="text-lg font-inter font-regular text-color-3 w-80 text-center mb-16"
     >
-      Now your finances are in one place and always under control
+      Discover a world of movies, always ready for you.
     </p>
-    <Button
-      text="Sign In"
-      @click="goToLogin"
-    />
+    <Button text="Sign In" @click="goToLogin" />
     <Button
       text="Create account"
-      buttonClass="bg-slate-50 text-slate-950 border border-slate-950 px-28 py-4"
+      buttonClass="bg-slate-50 text-slate-950 border px-28 py-4"
       @click="goToCreateAccount"
     />
   </div>

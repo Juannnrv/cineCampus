@@ -13,7 +13,7 @@ exports.userValidator = () => {
       .notEmpty()
       .withMessage("Email is required."),
     check("phone")
-      .notEmpty()
+      .matches(/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/)
       .withMessage("Phone number must be in the format XXX-XXX-XXXX."),
     check("card_id.$oid").isMongoId().withMessage("Invalid card ID format."),
     check("password")

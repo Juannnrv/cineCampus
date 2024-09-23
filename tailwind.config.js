@@ -5,7 +5,13 @@ export default {
     "./client/src/**/*.{js,ts,jsx,tsx,vue,css}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "color-1": "#232323",
+        "color-2": "#FE0000",
+        "color-3": "#FFFFFF",
+      }
+    },
   },
   plugins: [],
 }
