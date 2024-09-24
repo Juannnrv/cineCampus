@@ -2,7 +2,7 @@ const { check } = require('express-validator');
 
 exports.loginValidator = () => {
     return [
-        check('name').isString().withMessage('Name must be a string'),
+        check('email').isEmail().withMessage('Invalid email format'),
         check('password').isString().withMessage('Password must be a string')
     ]
 }

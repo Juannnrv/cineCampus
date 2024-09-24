@@ -1,6 +1,6 @@
 <template>
-  <div class="h-screen w-screen flex flex-col justify-center items-center bg-color-1">
-    <img class="flex mb-14 ml-72" :src="smallStarImg" alt="Small Star" />
+  <div class="h-screen w-screen flex flex-col justify-center items-center bg-color-1 ">
+    <img class="flex mb-10 ml-72 " :src="smallStarImg" alt="Small Star" />
     <h1 class="font-poppins font-bold mb-10 text-3xl mr-60 text-color-3">Log in</h1>
     <form @submit.prevent="logIn">
       <div class="relative mb-4 w-80 text-sm">
@@ -56,7 +56,7 @@
       <p class="text-sm text-color-3">Or Login with</p>
       <img :src="Line" alt="Line" />
     </div>
-    <div class="flex flex-row mb-32 gap-x-4">
+    <div class="flex flex-row mb-24 gap-x-4">
       <button class="border bg-color-3 rounded-lg px-11 py-4 w-28 bg-color1">
         <img class="w-6" :src="facebook" alt="Login with Facebook" />
       </button>
@@ -89,12 +89,11 @@ import Line from "../assets/img/Line.svg";
 import facebook from "../assets/img/facebook.svg";
 import google from "../assets/img/google.svg";
 import apple from "../assets/img/apple.svg";
-import Button from "../components/Button.vue"; // Importa el componente Button
-
+import Button from "../components/Button.vue"; 
 export default {
   name: "Login",
   components: {
-    Button, // Registra el componente
+    Button, 
   },
   data() {
     return {
@@ -119,11 +118,12 @@ export default {
     async logIn() {
       this.errorMessage = "";
       try {
-        const response = await fetch("http://localhost:5000/users/v2", {
+        const response = await fetch("http://localhost:5000/login/v1", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify(this.formData),
         });
         const data = await response.json();
@@ -137,7 +137,7 @@ export default {
           this.errorMessage = data.error;
         } else {
           console.log(data);
-          this.goToDashboard();
+          this.goToCine();
         }
       } catch (error) {
         console.error("There was an error logging in:", error);
@@ -147,8 +147,8 @@ export default {
     goToCreateAccount() {
       this.$router.push("/createAccount");
     },
-    goToDashboard() {
-      this.$router.push("/dashboard");
+    goToCine() {
+      this.$router.push("/Cine");
     },
     togglePasswordVisibility() {
       this.passwordVisible = !this.passwordVisible;
