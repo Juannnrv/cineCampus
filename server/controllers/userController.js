@@ -5,12 +5,12 @@ const Card = require("../models/card");
 const CardDTO = require("../dto/cardDto");
 const Database = require("../utils/db");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 /**
  * @function createUser
  * @description Create a new user in the system. If the role is 'admin', a card_id must be provided. If a card_id is provided, the user is created as a VIP user. Otherwise, the user is created with a 'user' role.
  * @async
- * @method
  * @param {Object} req - HTTP request object containing the user data in `req.body`.
  * @param {string} req.body.name - The name of the user.
  * @param {string} req.body.email - The email of the user.
@@ -20,16 +20,28 @@ const mongoose = require("mongoose");
  * @param {string} req.body.role - The role of the user (e.g., "user", "admin", "userVIP").
  * @param {Object} res - HTTP response object to send the response to the client.
  * @returns {void}
- * @throws {Error} Throws an error if the user creation fails.
- * @response {Object} Responds with the created user if successful.
- * @response {Object} Responds with an error message if the creation fails.
+ * @throws {Error} If there is an error in user creation, hashing the password, saving the user to the database, or creating the user in the database.
+ * @response {Object} If successful, responds with the created user and a success message. The user object is an instance of UserDTO.
+ * @response {Object} If the creation fails, responds with an error message and the error object.
  */
 exports.createUser = async (req, res) => {
   const { name, email, phone, password, card_id, role } = req.body;
 
-  const db = Database.getInstance();
+  Database.getInstance();
   const client = mongoose.connection.client;
   const cineDB = client.db("cineCampus");
+
+  const { result: existingUser, error: existingUserError } = await handleAsync(() => User.findOne({ email }));
+
+  if (existingUser) {
+    return res.status(400).json({ message: "User already exists" });
+  }
+
+  const { result: hashedPassword, error: hashError } = await handleAsync(() => bcrypt.hash(password, 10));
+
+  if (hashError) {
+    return res.status(500).json({ message: "Error hashing password", error: hashError });
+  }
 
   if (role === "admin" && !card_id) {
     return res.status(400).json({
@@ -42,7 +54,7 @@ exports.createUser = async (req, res) => {
       name,
       email,
       phone,
-      password,
+      password: hashedPassword,
       role: "admin",
     });
 
@@ -96,7 +108,7 @@ exports.createUser = async (req, res) => {
       name,
       email,
       phone,
-      password,
+      password: hashedPassword,
       role: "userVIP",
       card_id,
     });
@@ -135,7 +147,7 @@ exports.createUser = async (req, res) => {
       name,
       email,
       phone,
-      password,
+      password: hashedPassword,
       role: "user",
     });
 

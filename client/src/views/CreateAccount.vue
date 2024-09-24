@@ -2,7 +2,7 @@
   <div
     class="h-screen w-screen flex flex-col justify-center items-center bg-color-1"
   >
-    <img class="flex mb-14 ml-72" :src="smallStarImg" />
+    <img class="flex mb-8 ml-72" :src="smallStarImg" />
     <h1 class="font-poppins font-bold mb-10 text-3xl text-color-3 mr-32">Create account</h1>
     <form @submit.prevent="createAccount">
       <p class="font-inter font-bold text-color-3 mr-64 mb-1.5 text-sm">Username</p>
@@ -53,8 +53,7 @@
       </div>
       <Button
       text="Log In"
-      buttonClass="mb-32 bg-color-2 font-inter font-semibold text-slate-50 px-36 py-4 rounded-lg"
-      @click="goToLogin"
+      buttonClass="mb-16 bg-color-2 font-inter font-semibold text-slate-50 px-36 py-4 rounded-lg"
     />
     </form>
     <div class="flex flex-row gap-x-2">
