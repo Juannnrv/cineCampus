@@ -27,20 +27,25 @@ exports.findAllMovies = async (req, res) => {
           from: "show",
           localField: "_id",
           foreignField: "movie_id",
-          as: "show_details",
-        },
+          as: "show_details"
+        }
       },
       {
-        $unwind: "$show_details",
+        $unwind: "$show_details"
       },
       {
         $group: {
           _id: "$_id",
           title: { $first: "$title" },
-          genre: { $first: "$genre" },
+          genre: { $first: "$genre" }, 
           duration: { $first: "$duration" },
-          show_dates: { $push: "$show_details.date" },
-        },
+          cast: { $first: "$cast" }, 
+          poster: { $first: "$poster" },
+          trailer: { $first: "$trailer" },
+          status: { $first: "$status" },
+          sinopsis: { $first: "$sinopsis" },
+          show_dates: { $push: "$show_details.date" }
+        }
       },
       {
         $project: {
@@ -48,15 +53,24 @@ exports.findAllMovies = async (req, res) => {
           title: 1,
           genre: 1,
           duration: 1,
+          cast: 1, 
+          poster: 1,
+          trailer: 1,
+          status: 1,
+          sinopsis: 1,
           show_dates: {
             $cond: {
-              if: { $gt: [{ $size: "$show_dates" }, 1] },
+              if: {
+                $gt: [{ $size: "$show_dates" }, 1]
+              },
               then: "$show_dates",
-              else: { $arrayElemAt: ["$show_dates", 0] },
-            },
-          },
-        },
-      },
+              else: {
+                $arrayElemAt: ["$show_dates", 0]
+              }
+            }
+          }
+        }
+      }
     ])
   );
 

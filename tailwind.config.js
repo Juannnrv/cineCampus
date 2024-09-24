@@ -10,6 +10,7 @@ export default {
         "color-1": "#232323",
         "color-2": "#FE0000",
         "color-3": "#FFFFFF",
+        "color-4": "#272727",
       }
     },
   },
