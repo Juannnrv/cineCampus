@@ -17,7 +17,7 @@ export default {
     },
     buttonClass: {
       type: String,
-      default: 'bg-slate-950 font-inter font-semibold text-slate-50 px-36 py-4 rounded-lg mb-3.5' 
+      default: 'bg-color-2 font-inter font-semibold text-color-3 px-36 py-4 rounded-lg mb-3.5' 
     }
   }
 };

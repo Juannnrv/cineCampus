@@ -1,10 +1,10 @@
 <template>
-  <div class="h-screen w-screen flex flex-col justify-center items-center bg-gray-50">
+  <div class="h-screen w-screen flex flex-col justify-center items-center bg-color-1">
     <img class="flex mb-14 ml-72" :src="smallStarImg" alt="Small Star" />
-    <h1 class="font-poppins font-bold mb-10 text-3xl mr-60">Log in</h1>
+    <h1 class="font-poppins font-bold mb-10 text-3xl mr-60 text-color-3">Log in</h1>
     <form @submit.prevent="logIn">
       <div class="relative mb-4 w-80 text-sm">
-        <label for="email" class="font-inter font-regular mb-1.5">Email address</label>
+        <label for="email" class="font-inter font-bold text-color-3">Email address</label>
         <input
           class="border border-slate-0 rounded-lg px-4 py-2 w-80 bg-color1"
           type="email"
@@ -21,7 +21,7 @@
         />
       </div>
       <div class="relative mb-3.5 w-80 text-sm">
-        <label for="password" class="font-inter font-regular mb-1.5">Password</label>
+        <label for="password" class="font-inter font-bold text-color-3">Password</label>
         <input
           class="border border-slate-0 rounded-lg px-4 py-2 w-80 bg-color1"
           :type="passwordVisible ? 'text' : 'password'"
@@ -43,34 +43,34 @@
           {{ errorMessage }}
         </div>
         <div>
-          <p class="text-sm">Forgot password?</p>
+          <p class="text-sm text-color-3">Forgot password?</p>
         </div>
       </div>
       <Button
         text="Log in"
-        buttonClass="bg-slate-950 font-inter font-semibold text-slate-50 px-36 py-4 rounded-lg mb-9"
+        buttonClass="bg-color-2 font-inter font-semibold text-slate-50 px-36 py-4 rounded-lg mb-9"
       />
     </form>
     <div class="flex flex-row mb-5 gap-x-2.5">
       <img :src="Line" alt="Line" />
-      <p class="text-sm">Or Login with</p>
+      <p class="text-sm text-color-3">Or Login with</p>
       <img :src="Line" alt="Line" />
     </div>
     <div class="flex flex-row mb-32 gap-x-4">
-      <button class="border border-slate-0 rounded-lg px-11 py-4 w-28 bg-color1">
+      <button class="border bg-color-3 rounded-lg px-11 py-4 w-28 bg-color1">
         <img class="w-6" :src="facebook" alt="Login with Facebook" />
       </button>
-      <button class="border border-slate-0 rounded-lg px-11 py-4 w-28 bg-color1">
+      <button class="border bg-color-3 rounded-lg px-11 py-4 w-28 bg-color1">
         <img class="w-6" :src="google" alt="Login with Google" />
       </button>
-      <button class="border border-slate-0 rounded-lg px-11 py-4 w-28 bg-color1">
+      <button class="border bg-color-3 rounded-lg px-11 py-4 w-28 bg-color1">
         <img class="w-6" :src="apple" alt="Login with Apple" />
       </button>
     </div>
     <div class="flex flex-row gap-x-2">
-      <p class="font-inter font-regular text-sm">Don’t have an account?</p>
+      <p class="font-inter font-regular text-sm text-color-3">Don’t have an account?</p>
       <a
-        class="font-inter font-semibold text-slate-950 border-b-2 border-slate-950 text-sm"
+        class="font-inter font-semibold  text-color-3 border-b-2 border-color-3 text-sm"
         href="#"
         @click.prevent="goToCreateAccount"
       >Sign up</a>

@@ -1,11 +1,11 @@
 <template>
   <div
-    class="h-screen w-screen flex flex-col justify-center items-center bg-gray-50"
+    class="h-screen w-screen flex flex-col justify-center items-center bg-color-1"
   >
     <img class="flex mb-14 ml-72" :src="smallStarImg" />
-    <h1 class="font-poppins font-bold mb-10 text-3xl mr-32">Create account</h1>
+    <h1 class="font-poppins font-bold mb-10 text-3xl text-color-3 mr-32">Create account</h1>
     <form @submit.prevent="createAccount">
-      <p class="font-inter font-regular mr-64 mb-1.5 text-sm">Username</p>
+      <p class="font-inter font-bold text-color-3 mr-64 mb-1.5 text-sm">Username</p>
       <input
         class="border border-slate-0 rounded-lg mb-6 px-4 py-2 w-80 bg-color1"
         type="text"
@@ -14,7 +14,7 @@
         placeholder="Your username"
         required
       />
-      <p class="font-inter font-regular mr-64 mb-1.5 text-sm">Email</p>
+      <p class="font-inter font-bold text-color-3 mr-64 mb-1.5 text-sm">Email</p>
       <input
         class="border border-slate-0 rounded-lg mb-6 px-4 py-2 w-80 bg-color1"
         type="email"
@@ -24,7 +24,7 @@
         required
       />
       <div class="relative mb-6 w-80">
-        <p class="font-inter font-regular mb-1.5 text-sm">Password</p>
+        <p class="font-inter font-bold text-color-3 mb-1.5 text-sm">Password</p>
         <input
           class="border border-slate-0 rounded-lg px-4 py-2 w-80 bg-color1"
           :type="passwordVisible ? 'text' : 'password'"
@@ -47,20 +47,20 @@
       </div>
       <div class="flex flex-row gap-x-3 mb-10 ml-2">
         <img :src="agree ? agreeImg : disagreeImg" @click="toggleAgreement" />
-        <p class="font-inter font-regular text-sm">
+        <p class="font-inter text-color-3  text-sm">
           I accept the terms and privacy policy
         </p>
       </div>
       <Button
       text="Log In"
-      buttonClass="mb-32 bg-slate-950 font-inter font-semibold text-slate-50 px-36 py-4 rounded-lg"
+      buttonClass="mb-32 bg-color-2 font-inter font-semibold text-slate-50 px-36 py-4 rounded-lg"
       @click="goToLogin"
     />
     </form>
     <div class="flex flex-row gap-x-2">
-      <p class="font-inter font-regular text-sm">Already have an account?</p>
+      <p class="font-inter font-regular text-color-3 text-sm">Already have an account?</p>
       <a
-        class="font-inter font-semibold text-slate-950 border-b-2 border-slate-950"
+        class="font-inter font-semibold text-color-3 border-b-2 border-color-3"
         href="#"
         @click="goToLogin"
         >Sign in</a
