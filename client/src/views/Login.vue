@@ -1,10 +1,16 @@
 <template>
-  <div class="h-screen w-screen flex flex-col justify-center items-center bg-color-1 ">
-    <img class="flex mb-10 ml-72 " :src="smallStarImg" alt="Small Star" />
-    <h1 class="font-poppins font-bold mb-10 text-3xl mr-60 text-color-3">Log in</h1>
+  <div
+    class="h-screen w-screen flex flex-col justify-center items-center bg-color-1"
+  >
+    <img class="flex mb-5 ml-72" :src="smallStarImg" alt="Small Star" />
+    <h1 class="font-poppins font-bold mb-10 text-3xl mr-60 text-color-3">
+      Log in
+    </h1>
     <form @submit.prevent="logIn">
       <div class="relative mb-4 w-80 text-sm">
-        <label for="email" class="font-inter font-bold text-color-3">Email address</label>
+        <label for="email" class="font-inter font-bold text-color-3"
+          >Email address</label
+        >
         <input
           class="border border-slate-0 rounded-lg px-4 py-2 w-80 bg-color1"
           type="email"
@@ -21,7 +27,9 @@
         />
       </div>
       <div class="relative mb-3.5 w-80 text-sm">
-        <label for="password" class="font-inter font-bold text-color-3">Password</label>
+        <label for="password" class="font-inter font-bold text-color-3"
+          >Password</label
+        >
         <input
           class="border border-slate-0 rounded-lg px-4 py-2 w-80 bg-color1"
           :type="passwordVisible ? 'text' : 'password'"
@@ -39,7 +47,10 @@
         />
       </div>
       <div class="flex flex-row my-6 gap-5">
-        <div v-if="errorMessage" class="error-message text-red-600 font-semibold">
+        <div
+          v-if="errorMessage"
+          class="error-message text-red-600 font-semibold"
+        >
           {{ errorMessage }}
         </div>
         <div>
@@ -56,7 +67,7 @@
       <p class="text-sm text-color-3">Or Login with</p>
       <img :src="Line" alt="Line" />
     </div>
-    <div class="flex flex-row mb-24 gap-x-4">
+    <div class="flex flex-row mb-20 gap-x-4">
       <button class="border bg-color-3 rounded-lg px-11 py-4 w-28 bg-color1">
         <img class="w-6" :src="facebook" alt="Login with Facebook" />
       </button>
@@ -68,12 +79,15 @@
       </button>
     </div>
     <div class="flex flex-row gap-x-2">
-      <p class="font-inter font-regular text-sm text-color-3">Don’t have an account?</p>
+      <p class="font-inter font-regular text-sm text-color-3">
+        Don’t have an account?
+      </p>
       <a
-        class="font-inter font-semibold  text-color-3 border-b-2 border-color-3 text-sm"
+        class="font-inter font-semibold text-color-3 border-b-2 border-color-3 text-sm"
         href="#"
         @click.prevent="goToCreateAccount"
-      >Sign up</a>
+        >Sign up</a
+      >
     </div>
   </div>
 </template>
@@ -89,11 +103,11 @@ import Line from "../assets/img/Line.svg";
 import facebook from "../assets/img/facebook.svg";
 import google from "../assets/img/google.svg";
 import apple from "../assets/img/apple.svg";
-import Button from "../components/Button.vue"; 
+import Button from "../components/Button.vue";
 export default {
   name: "Login",
   components: {
-    Button, 
+    Button,
   },
   data() {
     return {
@@ -137,6 +151,7 @@ export default {
           this.errorMessage = data.error;
         } else {
           console.log(data);
+          sessionStorage.setItem("token", data.token);
           this.goToCine();
         }
       } catch (error) {
@@ -157,5 +172,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

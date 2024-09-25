@@ -25,6 +25,7 @@ app.use("/login", authRoutes);
 app.use("/users", userRoutes);
 
 app.use(authenticate);
+
 app.use("/movies", movieRoutes);
 app.use("/tickets", movementRoutes);
 app.use("/shows", showRoutes);
