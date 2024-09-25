@@ -1,8 +1,6 @@
 <template>
-  <section
-    class="h-screen w-screen flex flex-col bg-color-1 overflow-y-auto"
-  >
-    <div class="flex flex-col items-center">
+  <section class="h-screen w-screen flex flex-col bg-color-1">
+    <div class="flex flex-col items-center flex-grow overflow-y-auto">
       <nav class="mx-8 my-5">
         <div class="flex gap-7">
           <div class="flex gap-3 mb-4">
@@ -27,9 +25,11 @@
           </div>
           <img class="w-10 mt-[-19px]" :src="notificationImg" />
         </div>
-        <div class="bg-color-4 border-2 border-color-3 rounded-xl py-4 px-5 mb-5">
+        <div
+          class="bg-color-4 border-2 border-color-3 rounded-xl py-4 px-5 mb-5"
+        >
           <div class="flex gap-3">
-            <img :src="browseImg" />
+            <img :src="searchImg" />
             <input
               class="w-full bg-color-4 focus:outline-none my-input text-sm"
               type="text"
@@ -74,31 +74,53 @@
           <p class="text-lg text-color-3 font-semi-bold">Coming soon</p>
           <p class="text-sm text-color-2 font-semi-bold mt-1">See all</p>
         </div>
-        <div
-          class="bg-color-4 rounded-3xl mb-5 p-2.5 flex gap-5 mx-8"
-          v-for="movie in soon"
-          :key="movie.id"
-        >
-          <img class="w-20 rounded-3xl object-cover" :src="movie.poster" />
-          <div class="flex flex-col p-2.5 gap-2.5">
-            <p class="text-color-3 font-semi-bold">{{ movie.title }}</p>
-            <p class="text-color-2 text-sm">{{ movie.genre[0] }}</p>
-            <p class="text-color-3 text-sm">{{ movie.sinopsis.slice(0, 60) + "..." }}</p>
+        <div class="overflow-y-auto h-72 mb-24">
+          <div
+            class="bg-color-4 rounded-3xl mb-2 p-2.5 flex gap-5 mx-8"
+            v-for="movie in soon"
+            :key="movie.id"
+          >
+            <img class="w-20 rounded-3xl object-cover" :src="movie.poster" />
+            <div class="flex flex-col p-2.5 gap-2.5">
+              <p class="text-color-3 font-semi-bold">{{ movie.title }}</p>
+              <p class="text-color-2 text-sm">{{ movie.genre[0] }}</p>
+              <p class="text-color-3 text-sm">
+                {{ movie.sinopsis.slice(0, 60) + "..." }}
+              </p>
+            </div>
           </div>
         </div>
       </main>
+      <footer
+        class="w-[393px] h-[93px] flex gap-12 py-7 bg-color-4 justify-center rounded-2xl fixed bottom-0 border border-[rgba(255,255,255,0.2)]"
+      >
+        <img
+          class="w-9 h-9"
+          :src="homeRedImg"
+        />
+        <img class="w-9 h-9" :src="browseImg" />
+        <img
+          class="w-9 h-9"
+          :src="ticketWhiteImg"
+        />
+        <img class="w-9 h-9" :src="profileImg" />
+      </footer>
     </div>
   </section>
 </template>
 
 <script>
-import { Carousel, Slide, Pagination } from "vue3-carousel";
+import { Carousel, Slide, Pagination, Navigation } from "vue3-carousel";
 import "vue3-carousel/dist/carousel.css";
 import notificationImg from "../assets/img/notification.svg";
-import browseImg from "../assets/img/search.svg";
+import searchImg from "../assets/img/search.svg";
 import pointWhiteImg from "../assets/img/pointWhite.svg";
 import pointRedImg from "../assets/img/pointRed.svg";
-import { Navigation } from "vue3-carousel";
+import browseImg from "../assets/img/browse.svg";
+import homeRedImg from "../assets/img/homeRed.svg";
+import homeWhiteImg from "../assets/img/homeWhite.svg";
+import profileImg from "../assets/img/profile.svg";
+import ticketWhiteImg from "../assets/img/ticketWhite.svg";
 
 export default {
   name: "Cinema",
@@ -110,10 +132,16 @@ export default {
   },
   data() {
     return {
+      home: false,
+      ticket: false,
       notificationImg,
-      browseImg,
+      searchImg,
       pointWhiteImg,
       pointRedImg,
+      homeRedImg,
+      browseImg,
+      profileImg,
+      ticketWhiteImg,
       movies: [],
       soon: [],
     };
@@ -143,7 +171,7 @@ export default {
 
         if (response.ok) {
           this.movies = data.filter((movie) => movie.status === "cartelera");
-          this.soon = data.filter((movie) => movie.status !== "cartelera");
+          this.soon = data.filter((movie) => movie.status === "soon");
           console.log(this.soon);
           console.log(this.movies);
         } else {
@@ -156,7 +184,7 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    },
+    }
   },
 };
 </script>
