@@ -1,75 +1,93 @@
 <template>
   <section
-    class="h-screen w-screen flex flex-col justify-center items-center bg-color-1 "
+    class="h-screen w-screen flex flex-col bg-color-1 overflow-y-auto"
   >
-    <nav class="mx-8 mb-5">
-      <div class="flex gap-7">
-        <div class="flex gap-3 mb-4">
-          <div class="relative">
-            <img
-              class="w-12 h-12 rounded-full"
-              src="../assets/img/gengar.png"
-              alt="Gengar"
-            />
-            <span
-              class="top-0 left-7 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"
-            ></span>
-          </div>
-          <div>
-            <p class="font-inter font-regular text-sm text-color-3">
-              Hi, Gengar!
-            </p>
-            <p class="font-inter font-semi-bold text-base text-color-3">
-              Let’s watch a movie together!
-            </p>
-          </div>
-        </div>
-        <img class="w-10 mt-[-19px]" :src="notificationImg" />
-      </div>
-      <div class="bg-color-4 border-2 border-color-3 rounded-xl py-4 px-5 mb-5">
-        <div class="flex gap-3">
-          <img :src="browseImg" />
-          <input
-            class="w-full bg-color-4 focus:outline-none my-input text-sm"
-            type="text"
-            placeholder="Search movie, cinema, genre..."
-          />
-        </div>
-      </div>
-      <div class="flex justify-between mb-3">
-        <p class="text-lg text-color-3 font-semi-bold">Now playing</p>
-        <p class="text-sm text-color-2 font-semi-bold mt-1">See all</p>
-      </div>
-    </nav>
-    <main class="w-full">
-      <div class="movie-carousel w-full mx-auto">
-        <Carousel :itemsToShow="1.8" :wrapAround="true" :transition="500">
-          <Slide v-for="movie in movies" :key="movie.id">
-            <div
-              class="carousel__item w-[204px] h-[405px] flex flex-col items-center justify-center text-center rounded-[10px] shadow-[0_0_10px_rgba(0,0,0,0.1)]"
-            >
+    <div class="flex flex-col items-center">
+      <nav class="mx-8 my-5">
+        <div class="flex gap-7">
+          <div class="flex gap-3 mb-4">
+            <div class="relative">
               <img
-                :src="movie.poster"
-                :alt="movie.title"
-                class="movie-poster w-[214px] h-[319px] object-fill rounded-[20px] px-[5px]"
+                class="w-12 h-12 rounded-full"
+                src="../assets/img/gengar.png"
+                alt="Gengar"
               />
-              <h3
-                class="movie-title text-[18px] font-bold mt-[10px] text-color-3 max-w-full overflow-hidden whitespace-nowrap text-ellipsis"
-                title="{{ movie.title }}"
-              >
-                {{ movie.title }}
-              </h3>
-              <p class="movie-genre text-[14px] text-color-3 opacity-50">
-                {{ movie.genre[0] }}
+              <span
+                class="top-0 left-7 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"
+              ></span>
+            </div>
+            <div>
+              <p class="font-inter font-regular text-sm text-color-3">
+                Hi, Gengar!
+              </p>
+              <p class="font-inter font-semi-bold text-base text-color-3">
+                Let’s watch a movie together!
               </p>
             </div>
-          </Slide>
-          <template #addons>
-            <Pagination class="custom-pagination" />
-          </template>
-        </Carousel>
-      </div>
-    </main>
+          </div>
+          <img class="w-10 mt-[-19px]" :src="notificationImg" />
+        </div>
+        <div class="bg-color-4 border-2 border-color-3 rounded-xl py-4 px-5 mb-5">
+          <div class="flex gap-3">
+            <img :src="browseImg" />
+            <input
+              class="w-full bg-color-4 focus:outline-none my-input text-sm"
+              type="text"
+              placeholder="Search movie, cinema, genre..."
+            />
+          </div>
+        </div>
+        <div class="flex justify-between mb-3">
+          <p class="text-lg text-color-3 font-semi-bold">Now playing</p>
+          <p class="text-sm text-color-2 font-semi-bold mt-1">See all</p>
+        </div>
+      </nav>
+      <main class="w-full">
+        <div class="movie-carousel w-full mx-auto">
+          <Carousel :itemsToShow="1.8" :wrapAround="true" :transition="500">
+            <Slide v-for="movie in movies" :key="movie.id">
+              <div
+                class="carousel__item w-[204px] h-[405px] flex flex-col items-center justify-center text-center rounded-[10px] shadow-[0_0_10px_rgba(0,0,0,0.1)]"
+              >
+                <img
+                  :src="movie.poster"
+                  :alt="movie.title"
+                  class="movie-poster w-[214px] h-[319px] object-fill rounded-[20px] px-[5px]"
+                />
+                <h3
+                  class="movie-title text-[18px] font-bold mt-[10px] text-color-3 max-w-full overflow-hidden whitespace-nowrap text-ellipsis"
+                  title="{{ movie.title }}"
+                >
+                  {{ movie.title }}
+                </h3>
+                <p class="movie-genre text-[14px] text-color-3 opacity-50">
+                  {{ movie.genre[0] }}
+                </p>
+              </div>
+            </Slide>
+            <template #addons>
+              <Pagination class="custom-pagination" />
+            </template>
+          </Carousel>
+        </div>
+        <div class="flex justify-between mb-3 mx-8">
+          <p class="text-lg text-color-3 font-semi-bold">Coming soon</p>
+          <p class="text-sm text-color-2 font-semi-bold mt-1">See all</p>
+        </div>
+        <div
+          class="bg-color-4 rounded-3xl mb-5 p-2.5 flex gap-5 mx-8"
+          v-for="movie in soon"
+          :key="movie.id"
+        >
+          <img class="w-20 rounded-3xl object-cover" :src="movie.poster" />
+          <div class="flex flex-col p-2.5 gap-2.5">
+            <p class="text-color-3 font-semi-bold">{{ movie.title }}</p>
+            <p class="text-color-2 text-sm">{{ movie.genre[0] }}</p>
+            <p class="text-color-3 text-sm">{{ movie.sinopsis.slice(0, 60) + "..." }}</p>
+          </div>
+        </div>
+      </main>
+    </div>
   </section>
 </template>
 
@@ -97,6 +115,7 @@ export default {
       pointWhiteImg,
       pointRedImg,
       movies: [],
+      soon: [],
     };
   },
   mounted() {
@@ -124,6 +143,8 @@ export default {
 
         if (response.ok) {
           this.movies = data.filter((movie) => movie.status === "cartelera");
+          this.soon = data.filter((movie) => movie.status !== "cartelera");
+          console.log(this.soon);
           console.log(this.movies);
         } else {
           console.log(data.message);

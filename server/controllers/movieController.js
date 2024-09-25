@@ -43,6 +43,7 @@ exports.findAllMovies = async (req, res) => {
           poster: { $first: "$poster" },
           trailer: { $first: "$trailer" },
           status: { $first: "$status" },
+          sinopsis: { $first: "$sinopsis" },
           show_dates: { $push: "$show_details.date" }
         }
       },
@@ -56,6 +57,7 @@ exports.findAllMovies = async (req, res) => {
           poster: 1,
           trailer: 1,
           status: 1,
+          sinopsis: 1,
           show_dates: {
             $cond: {
               if: {
