@@ -101,8 +101,8 @@ To connect the application to the database and configure other sensitive paramet
 # MongoDB protocol and URI configuration
 MONGO_PROTOCOLO=mongodb://
 MONGO_USER=juan
-MONGO_PSW=juan122
-MONGO_HOST=172.16.102.69
+MONGO_PSW=juan123
+MONGO_HOST=192.168.1.2
 MONGO_PORT=27017
 MONGO_DB_NAME=cineCampus
 
@@ -152,8 +152,8 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 
 ```
 {
-  "name": "Gengar@example.com",
-  "password": "Gengar"
+  "name": "Lucario@example.com",
+  "password": "Lucario"
 }
 ```
 
@@ -225,49 +225,68 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 
   ```
   [
-    {
-      "_id": "64d0c4e68b819589635a1eab",
-      "title": "Garfield",
-      "genre": [
-        "Animation",
-        "Comedy"
-      ],
-      "duration": 80,
-      "show_dates": "2024-09-04T20:00:00.000Z"
-    },
-    {
-      "_id": "64d0c4e68b819589635a1eac",
-      "title": "Godzilla vs Kong",
-      "genre": [
-        "Action",
-        "Adventure",
-        "Sci-Fi"
-      ],
-      "duration": 113,
-      "show_dates": "2024-09-05T16:00:00.000Z"
-    },
-    {
-      "_id": "64d0c4e68b819589635a1ead",
-      "title": "Kung Fu Panda 4",
-      "genre": [
-        "Animation",
-        "Action",
-        "Adventure"
-      ],
-      "duration": 95,
-      "show_dates": "2024-09-06T19:00:00.000Z"
-    },
-    {
-      "_id": "64d0c4e68b819589635a1eb2",
-      "title": "Mufasa: The Lion King",
-      "genre": [
-        "Animation",
-        "Adventure",
-        "Drama"
-      ],
-      "duration": 105,
-      "show_dates": "2024-09-02T21:00:00.000Z"
-    }
+  {
+    "_id": "66f35dcab20ac6f3207cbf26",
+    "title": "The Fantastic Four: First Steps",
+    "genre": [
+      "Acción",
+      "Ciencia Ficción"
+    ],
+    "duration": 128,
+    "cast": [
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRR6NpA5g8MC9AZFsy-wWhJv-1r3g8TM4tqlY1lGpsBA9ssyUJfEkauh5gzhggDJhH2oTeSx7o&s=19",
+        "name": "Vanessa Kirby",
+        "character": "Mujer Invisible"
+      },
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQDBMm4ESoJwqInpI1wrAiKL9VgNcER87EdOqlc0YFqAiXHoJAf9fvGvOCHO_q4KtBAKeBk7VRZ&s=19",
+        "name": "Joseph Quinn",
+        "character": "Johnny Storm"
+      },
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTdgPWnm7OGqVJyPfst8ya7kOhGkrJAJMdyXa3VOMA105Z6aAwU6kw8XrvZ8ba_nWuoAociAqaB&s=19",
+        "name": "Pedro Pascal",
+        "character": "Reed Richards"
+      }
+    ],
+    "poster": "https://cdn.mos.cms.futurecdn.net/9PDw8goaTRi4hYgLhVaBtb-320-80.jpg",
+    "trailer": "https://www.youtube.com/watch?v=GAE5v01t2cs",
+    "status": "soon",
+    "sinopsis": "Los cuatro fantásticos son un equipo de los cómics de Marvel. Integrados por Reed Richards, Sue y Johnny Storm, y Ben Grimm. Tras un accidente en el espacio los cuatro compañeros regresan a la tierra y comienzan a experimentar una serie de cambios que terminan por darles super poderes.",
+    "show_dates": "2024-09-04T20:00:00.000Z"
+  },
+  {
+    "_id": "66f49784cbdd85efc5a0d69c",
+    "title": "Thunderbolts",
+    "genre": [
+      "Acción",
+      "Ciencia Ficción"
+    ],
+    "duration": 148,
+    "cast": [
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTj53jwCF0UsmwEjBJEl_19hUk8YO0bEpiLF6jUGU5fMI1rES9rhx8DeY&s=10",
+        "name": "Florence Pugh",
+        "character": "Viuda Negra"
+      },
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3H7kyUcRD1RYloOqX2vxXjfj9ESXskDKk394-Q-lIULLTgXkMmBK0KJw&s=10",
+        "name": "Geraldine Viswanathan",
+        "character": "Mel"
+      },
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEF7nqWnTy0ssCJXMfBWTRm6-5YBD3JISkRdZJVV1xZJYWjdM9x3wZC7QF&s=10",
+        "name": "Lewis Pullman",
+        "character": "Sentry"
+      }
+    ],
+    "poster": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSt-ZkyfY_d0HcefSnABTQ5Rf4MHe67eGSEy8gn8eZEJYo7ikea",
+    "trailer": "https://www.youtube.com/watch?v=yAlYcQiBuJ0",
+    "status": "cartelera",
+    "sinopsis": "Un grupo de villanos comandados por el peligroso Baron Zemo, que, buscando una redención por sus acciones, forma un equipo de antiguos criminales, enemigos de los Avengers, que operan en la clandestinidad, resolviendo misiones que, con la ausencia de varios superhéroes, nadie más puede resolver. ",
+    "show_dates": "2024-09-08T15:00:00.000Z"
+  }
   ]
   ```
 
@@ -305,13 +324,61 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 
   ```
   {
-    "_id": "64d0c4e68b819589635a1eb2",
-    "title": "Mufasa: The Lion King",
-    "duration": 105,
-    "synopsis": "Explore the story of King Mufasa, father of Simba, in a new adventure that delves into the past of the lion king."
+  "_id": "66f35dcab20ac6f3207cbf23",
+  "title": "Venom: The Last Dance",
+  "genre": [
+    "Acción",
+    "Ciencia ficción"
+  ],
+  "duration": 130,
+  "sinopsis": "Venom: El Último Baile es una próxima película estadounidense de superhéroes de 2024, basada en el character de Marvel Comics, Venom. La secuela de Venom y Venom: Let There Be Carnage, y la quinta película del Universo Spider-Man de Sony, fue escrita y dirigida y coproducida por Kelly Marcel.",
+  "cast": [
+    {
+      "_id": "66f5f510596e9bea96667995",
+      "photo": "https://www.canalcosmo.es/upload/noticias/img2/img14751d.jpg",
+      "name": "Tom Hardy",
+      "character": "Venom"
+    },
+    {
+      "_id": "66f5f510596e9bea96667996",
+      "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzaIcHN9mkPOOR4_QsM4tQ3l7TwaGpbIYvnblKELK0SAjraA52",
+      "name": "Juno Temple",
+      "character": "Dr. Payne"
+    },
+    {
+      "_id": "66f5f510596e9bea96667997",
+      "photo": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRYNSEy13F20btTaWbdsGl_FQvQstRmmBZsJSzaTE2BzsmC9Q_f",
+      "name": "Rhys Ifans",
+      "character": "Martin"
+    },
+    {
+      "_id": "66f5f510596e9bea96667998",
+      "photo": "https://static.wikia.nocookie.net/doblaje/images/8/8a/Peggy_Lu.png/revision/latest?cb=20230607164434&path-prefix=es",
+      "name": "Peggy Lu",
+      "character": "Mrs. Chen"
+    },
+    {
+      "_id": "66f5f510596e9bea96667999",
+      "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Cristo_Fernandez_Photo_Op_GalaxyCon_Richmond_2024.jpg/640px-Cristo_Fernandez_Photo_Op_GalaxyCon_Richmond_2024.jpg",
+      "name": "Cristo Fernández",
+      "character": "Eddie Brock"
+    },
+    {
+      "_id": "66f5f510596e9bea9666799a",
+      "photo": "https://m.media-amazon.com/images/M/MV5BY2VhODJjNmQtY2E0ZC00ZjUwLWJjZGQtMzZhZTgxOTE4MDJkXkEyXkFqcGc@._V1_.jpg",
+      "name": "Stephen Graham",
+      "character": "Eddie Brock"
+    },
+    {
+      "_id": "66f5f510596e9bea9666799b",
+      "photo": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRu0c5LxeWlmH9g-ZVb3nVJAtuzg88X4cNX7ArCA7LEvjACnGph",
+      "name": "Alanna Ubach"
+    }
+  ],
+  "poster": "https://m.media-amazon.com/images/M/MV5BZDMyYWU4NzItZDY0MC00ODE2LTkyYTMtMzNkNDdmYmFhZDg0XkEyXkFqcGc@._V1_.jpg",
+  "trailer": "https://youtu.be/__2bjWbetsA",
+  "status": "cartelera"
   }
-  ```
-
 - **404 - Not Found:**
 
   **Description:** The provided ID does not match any movie in the database.
