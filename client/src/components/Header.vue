@@ -1,7 +1,7 @@
 <template>
   <header class="flex flex-col items-center">
     <div class="flex gap-16 mx-8 my-5">
-      <img :src="arrowImg" class="w-6 h-6" @click="handleArrowClick" />
+      <img :src="arrowImg" class="w-6 h-6 cursor-pointer" @click="handleArrowClick" />
       <p class="parrafo">{{ headerText }}</p>
       <img :src="menuImg" class="w-6 h-6" />
     </div>

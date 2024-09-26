@@ -51,8 +51,11 @@
         </div>
       </main>
       <footer @click="goToSeats">
-        <div>
+        <div v-if="movie.status === 'cartelera'">
           <Button :text="'Book Now'" />
+        </div>
+        <div v-else>
+          <Button buttonClass="bg-color-2 w-[333px] parrafo p-3.5 mb-2" :text="'Coming Soon...'" />
         </div>
       </footer>
   </section>
