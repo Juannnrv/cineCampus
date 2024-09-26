@@ -1,35 +1,60 @@
 <template>
-  <section class="w-screen h-screen flex flex-col items-center bg-color-1">
-    <Header :headerText="'Cinema Selection'" />
-    <img
-      class="w-[367px] h-[204px] rounded-2xl object-cover object-center mb-2.5"
-      :src="movie.poster"
-    />
-    <main class="flex flex-col w-[330px]">
-      <div class="flex justify-between mb-2.5">
-        <div>
-          <p class="parrafo">{{ movie.title }}</p>
-          <p class="parrafoSmall">{{ movie.genre.join(", ") }}</p>
-        </div>
-        <div
-          class="bg-color-2 text-color-3 w-[84px] h-[22px] p-1 poppins gap-1.5 flex rounded"
-        >
-          <img :src="watchImg" class="w-[12px] h-[11px]" />
-          <p class="watchSmall">Watch Trailer</p>
-        </div>
-      </div>
-      <p class="text-sm text-color-3 inter mb-6">{{ movie.sinopsis }}</p>
-      <p class="parrafo mb-4">Cast</p>
-      <div class="flex flex-row overflow-x-auto gap-3.5 ">
-        <div v-for="(member, index) in movie.cast" :key="index" class="flex">
-          <img :src="member.photo" class="w-[41px] h-[41px] rounded-full object-cover" />
-          <div class="flex flex-col ml-2 w-[100px]">
-            <p class="poppins mt-2">{{ member.name }}</p>
-            <p class="poppinsSmall">{{ member.character }}</p>
+  <section
+    class="w-screen h-screen flex flex-col items-center overflow-y-scroll bg-color-1"
+  >
+      <Header :headerText="'Cinema Selection'" @arrow-clicked="goToCinema" />
+      <img
+        class="w-[367px] h-[204px] rounded-2xl object-cover object-center mb-2.5"
+        :src="movie.poster"
+      />
+      <main class="flex flex-col w-[330px] mb-12">
+        <div class="flex justify-between mb-2.5">
+          <div>
+            <p class="parrafo">{{ movie.title }}</p>
+            <p class="parrafoSmall">{{ movie.genre.join(", ") }}</p>
+          </div>
+          <div
+            class="bg-color-2 text-color-3 w-[84px] h-[22px] p-1 poppinsSemiBold gap-1.5 flex rounded"
+          >
+            <img :src="watchImg" class="w-[12px] h-[11px]" />
+            <a :href="movie.trailer" target="_blank" class="watchSmall"
+              >Watch Trailer</a
+            >
           </div>
         </div>
-      </div>
-    </main>
+        <p class="text-sm text-color-3 inter mb-6">{{ movie.sinopsis }}</p>
+        <p class="parrafo mb-4">Cast</p>
+        <div class="flex flex-row overflow-x-hidden gap-3.5">
+          <div v-for="(member, index) in movie.cast" :key="index" class="flex">
+            <img
+              :src="member.photo"
+              class="w-[41px] h-[41px] rounded-full object-cover"
+            />
+            <div class="flex flex-col ml-2 mb-7 w-[100px]">
+              <p class="poppinsSemiBold mt-2">{{ member.name }}</p>
+              <p class="poppinsLight">{{ member.character }}</p>
+            </div>
+          </div>
+        </div>
+        <p class="parrafo mb-4">Cinema</p>
+        <div
+          class="bg-color-4 border-2 border-color-2 rounded-xl w-[333px] h-[60px] flex justify-between items-center px-4"
+        >
+          <div class="flex flex-col justify-center">
+            <p class="poppins text-color-3 text-sm font-600">Campuslands</p>
+            <p class="poppinsLight">Zona Franca, Santander</p>
+          </div>
+          <img
+            :src="campusImg"
+            class="w-[48px] h-[48px] rounded-xl object-cover"
+          />
+        </div>
+      </main>
+      <footer @click="goToSeats">
+        <div>
+          <Button :text="'Book Now'" />
+        </div>
+      </footer>
   </section>
 </template>
 
@@ -37,6 +62,7 @@
 import Header from "../components/Header.vue";
 import Button from "../components/Button.vue";
 import watchImg from "../assets/img/watch.svg";
+import campusImg from "../assets/img/campuslands.png";
 
 export default {
   name: "Detail",
@@ -48,18 +74,24 @@ export default {
     return {
       movie: {},
       watchImg,
+      campusImg,
     };
   },
   created() {
     this.getMovie();
   },
   methods: {
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    },
     async getMovie() {
       try {
-        const token = sessionStorage.getItem("token");
+        const token = this.getCookie("token");
         if (!token) {
           console.error("No token found");
-          this.$router.push("/login");
+          this.goToLogin();
           return;
         }
         const response = await fetch(
@@ -83,6 +115,15 @@ export default {
         console.error("Error fetching movie", error);
       }
     },
+    goToCinema() {
+      this.$router.push("/cine");
+    },
+    goToLogin() {
+      this.$router.push("/login");
+    },
+    goToSeats() {
+      this.$router.push(`/seats/${this.$route.params.id}`);
+    },
   },
 };
 </script>
@@ -98,12 +139,16 @@ export default {
 
 .poppins {
   font-family: "Poppins", sans-serif;
+}
+
+.poppinsSemiBold {
+  font-family: "Poppins", sans-serif;
   font-size: 8px;
   color: #ffffff;
   font-weight: 600;
 }
 
-.poppinsSmall {
+.poppinsLight {
   font-family: "Poppins", sans-serif;
   font-size: 8px;
   color: #ffffff;
