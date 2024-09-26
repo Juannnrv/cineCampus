@@ -151,7 +151,6 @@ export default {
           this.errorMessage = data.error;
         } else {
           console.log(data);
-          sessionStorage.setItem("token", data.token);
           this.goToCine();
         }
       } catch (error) {
