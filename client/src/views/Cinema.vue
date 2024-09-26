@@ -52,6 +52,7 @@
                 <img
                   :src="movie.poster"
                   :alt="movie.title"
+                  @click="selectedMovie(movie._id)"
                   class="movie-poster w-[214px] h-[319px] object-fill rounded-[20px] px-[5px]"
                 />
                 <h3
@@ -94,15 +95,9 @@
       <footer
         class="w-[393px] h-[93px] flex gap-12 py-7 bg-color-4 justify-center rounded-2xl fixed bottom-0 border border-[rgba(255,255,255,0.2)]"
       >
-        <img
-          class="w-9 h-9"
-          :src="homeRedImg"
-        />
+        <img class="w-9 h-9" :src="homeRedImg" />
         <img class="w-9 h-9" :src="browseImg" />
-        <img
-          class="w-9 h-9"
-          :src="ticketWhiteImg"
-        />
+        <img class="w-9 h-9" :src="ticketWhiteImg" />
         <img class="w-9 h-9" :src="profileImg" />
       </footer>
     </div>
@@ -184,7 +179,10 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    }
+    },
+    selectedMovie(id) {
+      this.$router.push(`/detail/${id}`);
+    },
   },
 };
 </script>
