@@ -16,81 +16,47 @@ To run this project, you need to have Node.js and npm installed on your machine.
 
 ------
 
-### Dependencys
-
-The project uses the following Node.js dependencies:
-
-- `cors`
-
-  : ^2.8.5
-
-  - Allows the configuration of CORS (Cross-Origin Resource Sharing) on the server.
-
-- `express`
-
-  : ^4.19.2
-
-  - Framework for building web applications and APIs.
-
-- `express-validator`
-
-  : ^7.2.0
-
-  - Tool to validate and sanitize user entries in Express.
-
-- `jsonwebtoken`
-
-  : ^9.0.2
-
-  - For the creation and verification of JSON Web Tokens (JWT).
-
-- `mongodb`
-
-  : ^6.8.0
-
-  - Native MongoDB client for Node.js.
-
-- `mongoose`
-
-  : ^8.5.5
-
-  - ODM (Object Data Modeling) for MongoDB, which facilitates interaction with the database.
-
-- `passport`
-
-  : ^0.7.0
-
-  - Node.js authentication middleware.
-
-- `passport-jwt`
-
-  : ^4.0.1
-
-  - Passport strategy for authentication using JSON Web Tokens.
-
-- `passport-local`
-
-  : ^1.0.0
-
-  - Passport strategy for local authentication (name and password).
-
-- `socket.io`
-
-  : ^4.7.5
-
-  - Library for real-time communication based on websockets.
-
-------
-
 ### Scripts
 
-- `dev`: 
+- `dev:front`: 
 
+  ```bash
+  vite
   ```
+
+  - Start the frontend development server using Vite.
+
+- `dev:back`:
+
+  ```bash
   node --env-file .env --watch server.js
   ```
 
-  - Start the server in development mode, observing changes in the `server.js` file.
+  - Start the backend server in development mode, observing changes in the ``server.js`` file.
+
+- `dev`:
+
+  ```bash
+  concurrently "npm run dev:front" "npm run dev:back"
+  ```
+
+  - Start both the frontend and backend servers concurrently in development mode.
+
+- `build`:
+
+  ```bash
+  concurrently "vite build" "npm run dev:back"
+  ```
+
+  - Run the Vite build process for production and start the backend server.
+
+- `preview`
+
+  ```bash
+  vite preview
+  ```
+
+  - Preview the production build locally.
 
 ------
 
@@ -101,8 +67,8 @@ To connect the application to the database and configure other sensitive paramet
 # MongoDB protocol and URI configuration
 MONGO_PROTOCOLO=mongodb://
 MONGO_USER=juan
-MONGO_PSW=juan122
-MONGO_HOST=172.16.102.69
+MONGO_PSW=juan123
+MONGO_HOST=192.168.1.2
 MONGO_PORT=27017
 MONGO_DB_NAME=cineCampus
 
@@ -116,7 +82,7 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 1. **Clone the repository**:
 
    ```
-   git clone <url_del_repositorio>
+   git clone https://github.com/Juannnrv/cineCampus.git
    ```
 
 2. **Install dependencies**:
@@ -129,10 +95,10 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 
    Create an `.env` file in the root of the project and add the necessary environment variables (see previous section).
 
-4. **Starts the server in development mode**:
+4. **Starts the server in build mode**:
 
    ```
-   npm run dev
+   npm run build
    ```
 
 
@@ -152,8 +118,8 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 
 ```
 {
-  "name": "Gengar@example.com",
-  "password": "Gengar"
+  "name": "Lucario@example.com",
+  "password": "Lucario"
 }
 ```
 
@@ -225,49 +191,68 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 
   ```
   [
-    {
-      "_id": "64d0c4e68b819589635a1eab",
-      "title": "Garfield",
-      "genre": [
-        "Animation",
-        "Comedy"
-      ],
-      "duration": 80,
-      "show_dates": "2024-09-04T20:00:00.000Z"
-    },
-    {
-      "_id": "64d0c4e68b819589635a1eac",
-      "title": "Godzilla vs Kong",
-      "genre": [
-        "Action",
-        "Adventure",
-        "Sci-Fi"
-      ],
-      "duration": 113,
-      "show_dates": "2024-09-05T16:00:00.000Z"
-    },
-    {
-      "_id": "64d0c4e68b819589635a1ead",
-      "title": "Kung Fu Panda 4",
-      "genre": [
-        "Animation",
-        "Action",
-        "Adventure"
-      ],
-      "duration": 95,
-      "show_dates": "2024-09-06T19:00:00.000Z"
-    },
-    {
-      "_id": "64d0c4e68b819589635a1eb2",
-      "title": "Mufasa: The Lion King",
-      "genre": [
-        "Animation",
-        "Adventure",
-        "Drama"
-      ],
-      "duration": 105,
-      "show_dates": "2024-09-02T21:00:00.000Z"
-    }
+  {
+    "_id": "66f35dcab20ac6f3207cbf26",
+    "title": "The Fantastic Four: First Steps",
+    "genre": [
+      "Acción",
+      "Ciencia Ficción"
+    ],
+    "duration": 128,
+    "cast": [
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRR6NpA5g8MC9AZFsy-wWhJv-1r3g8TM4tqlY1lGpsBA9ssyUJfEkauh5gzhggDJhH2oTeSx7o&s=19",
+        "name": "Vanessa Kirby",
+        "character": "Mujer Invisible"
+      },
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQDBMm4ESoJwqInpI1wrAiKL9VgNcER87EdOqlc0YFqAiXHoJAf9fvGvOCHO_q4KtBAKeBk7VRZ&s=19",
+        "name": "Joseph Quinn",
+        "character": "Johnny Storm"
+      },
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTdgPWnm7OGqVJyPfst8ya7kOhGkrJAJMdyXa3VOMA105Z6aAwU6kw8XrvZ8ba_nWuoAociAqaB&s=19",
+        "name": "Pedro Pascal",
+        "character": "Reed Richards"
+      }
+    ],
+    "poster": "https://cdn.mos.cms.futurecdn.net/9PDw8goaTRi4hYgLhVaBtb-320-80.jpg",
+    "trailer": "https://www.youtube.com/watch?v=GAE5v01t2cs",
+    "status": "soon",
+    "sinopsis": "Los cuatro fantásticos son un equipo de los cómics de Marvel. Integrados por Reed Richards, Sue y Johnny Storm, y Ben Grimm. Tras un accidente en el espacio los cuatro compañeros regresan a la tierra y comienzan a experimentar una serie de cambios que terminan por darles super poderes.",
+    "show_dates": "2024-09-04T20:00:00.000Z"
+  },
+  {
+    "_id": "66f49784cbdd85efc5a0d69c",
+    "title": "Thunderbolts",
+    "genre": [
+      "Acción",
+      "Ciencia Ficción"
+    ],
+    "duration": 148,
+    "cast": [
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTj53jwCF0UsmwEjBJEl_19hUk8YO0bEpiLF6jUGU5fMI1rES9rhx8DeY&s=10",
+        "name": "Florence Pugh",
+        "character": "Viuda Negra"
+      },
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3H7kyUcRD1RYloOqX2vxXjfj9ESXskDKk394-Q-lIULLTgXkMmBK0KJw&s=10",
+        "name": "Geraldine Viswanathan",
+        "character": "Mel"
+      },
+      {
+        "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEF7nqWnTy0ssCJXMfBWTRm6-5YBD3JISkRdZJVV1xZJYWjdM9x3wZC7QF&s=10",
+        "name": "Lewis Pullman",
+        "character": "Sentry"
+      }
+    ],
+    "poster": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSt-ZkyfY_d0HcefSnABTQ5Rf4MHe67eGSEy8gn8eZEJYo7ikea",
+    "trailer": "https://www.youtube.com/watch?v=yAlYcQiBuJ0",
+    "status": "cartelera",
+    "sinopsis": "Un grupo de villanos comandados por el peligroso Baron Zemo, que, buscando una redención por sus acciones, forma un equipo de antiguos criminales, enemigos de los Avengers, que operan en la clandestinidad, resolviendo misiones que, con la ausencia de varios superhéroes, nadie más puede resolver. ",
+    "show_dates": "2024-09-08T15:00:00.000Z"
+  }
   ]
   ```
 
@@ -305,13 +290,38 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
 
   ```
   {
-    "_id": "64d0c4e68b819589635a1eb2",
-    "title": "Mufasa: The Lion King",
-    "duration": 105,
-    "synopsis": "Explore the story of King Mufasa, father of Simba, in a new adventure that delves into the past of the lion king."
-  }
-  ```
-
+  "_id": "66f35dcab20ac6f3207cbf26",
+  "title": "The Fantastic Four: First Steps",
+  "genre": [
+    "Acción",
+    "Ciencia Ficción"
+  ],
+  "duration": 128,
+  "sinopsis": "The Marvel Comics superhero team created by Stan Lee and Jack Kirby. This quartet of superheroes consists of Mr. Fantastic, capable of stretching his body into incredible lengths and shapes, the Invisible Woman, who boasts invisibility as well as projecting powerful force fields, the Human Torch, capable of generating flames, surrounding himself with flames, and flying, and the Thing, who possesses superhuman strength and endurance due to the rock-like nature of his skin.",
+  "poster": "https://cdn.mos.cms.futurecdn.net/9PDw8goaTRi4hYgLhVaBtb-320-80.jpg",
+  "trailer": "https://www.youtube.com/watch?v=GAE5v01t2cs",
+  "cast": [
+    {
+      "_id": "66f9ffee66836d452bb79dac",
+      "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRR6NpA5g8MC9AZFsy-wWhJv-1r3g8TM4tqlY1lGpsBA9ssyUJfEkauh5gzhggDJhH2oTeSx7o&s=19",
+      "name": "Vanessa Kirby",
+      "character": "Mujer Invisible"
+    },
+    {
+      "_id": "66f9ffee66836d452bb79dad",
+      "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQDBMm4ESoJwqInpI1wrAiKL9VgNcER87EdOqlc0YFqAiXHoJAf9fvGvOCHO_q4KtBAKeBk7VRZ&s=19",
+      "name": "Joseph Quinn",
+      "character": "Johnny Storm"
+    },
+    {
+      "_id": "66f9ffee66836d452bb79dae",
+      "photo": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTdgPWnm7OGqVJyPfst8ya7kOhGkrJAJMdyXa3VOMA105Z6aAwU6kw8XrvZ8ba_nWuoAociAqaB&s=19",
+      "name": "Pedro Pascal",
+      "character": "Reed Richards"
+    }
+  ],
+  "status": "soon"
+}
 - **404 - Not Found:**
 
   **Description:** The provided ID does not match any movie in the database.
@@ -631,18 +641,157 @@ JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
   **Example Response (JSON):**
 
   ```
-  [
-    {
-      "seat": "A1",
-      "seat_type": "Standard",
-      "price": 15.00
+  {
+    "theater": {
+      "name": "2D",
+      "price": 10.95
     },
-    {
-      "seat": "A2",
-      "seat_type": "Standard",
-      "price": 15.00
-    }
-  ]
+    "date": "2024-10-17",
+    "time": "13:00",
+    "showingIds": [
+      "66f49d59cbdd85efc5a0d69e"
+    ],
+    "availableSeats": [
+      {
+        "seat": "A1",
+        "availability": true,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "A2",
+        "availability": false,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "A3",
+        "availability": true,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "A4",
+        "availability": false,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "A5",
+        "availability": true,
+        "seat_type": "standard",
+        "price": 0
+      },
+      
+        "seat": "C1",
+        "availability": true,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "C2",
+        "availability": false,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "C3",
+        "availability": false,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "C4",
+        "availability": false,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "C5",
+        "availability": true,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "C6",
+        "availability": true,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "C7",
+        "availability": true,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "C8",
+        "availability": true,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "C9",
+        "availability": false,
+        "seat_type": "standard",
+        "price": 0
+      },
+      {
+        "seat": "D1",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      },
+      {
+        "seat": "D2",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      },
+      {
+        "seat": "D3",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      },
+      {
+        "seat": "D4",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      },
+      {
+        "seat": "D5",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      },
+      {
+        "seat": "D6",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      },
+      {
+        "seat": "D7",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      },
+      {
+        "seat": "D8",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      },
+      {
+        "seat": "D9",
+        "availability": true,
+        "seat_type": "premium",
+        "price": 50
+      }
+    ]
+  },
   ```
 
 - **404 - Not Found:**
