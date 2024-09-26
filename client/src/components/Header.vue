@@ -1,5 +1,5 @@
 <template>
-    <header class="flex flex-col items-center flex-grow overflow-y-auto">
+    <header class="flex flex-col items-center overflow-y-auto">
       <div class="flex gap-16 mx-8 my-5">
         <img :src="arrowImg" class="w-6 h-6" />
         <p class="parrafo">{{ headerText }}</p>
