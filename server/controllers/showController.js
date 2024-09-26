@@ -3,44 +3,40 @@ const { handleAsync } = require('../middleware/handleAsync');
 const mongoose = require('mongoose');
 
 /**
- * Get available seats for a specific show.
+ * Get available seats for the shows of a specific movie.
  * 
  * @param {Object} req - The request object.
  * @param {Object} req.params - The parameters in the request.
- * @param {string} req.params.id - The ID of the show.
+ * @param {string} req.params.id - The ID of the movie.
  * @param {Object} res - The response object.
  * 
- * @returns {Promise<Object>} A promise that resolves to an object containing the available seats for the show.
+ * @returns {Promise<void>} A promise that resolves to a response containing the available seats for the shows of the movie.
  * 
  * @throws {Error} If an error occurs while retrieving the seats from the database.
- * @throws {Error} If the show with the given ID is not found.
+ * @throws {Error} If no shows are found for the given movie ID.
  */
 exports.getSeatsAvailable = async (req, res) => {
     const { id } = req.params;
 
     const { result, err } = await handleAsync(() => Show.aggregate([
         {
-            $unwind: "$available_seats",
+          $match: {
+            movie_id: new mongoose.Types.ObjectId(id),
+            "available_seats.availability": true
+          }
         },
         {
-            $match: {
-                "available_seats.availability": true,
-                _id: new mongoose.Types.ObjectId(id),
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                seat: "$available_seats.seat",
-                seat_type: "$available_seats.seat_type",
-                price: "$available_seats.price",
-            },
-        },
-    ]));
+          $project: {
+            _id: 1,
+            date: 1,
+            available_seats: 1
+          }
+        }
+      ]));
 
     if (err) {
         return res.status(500).json({
-            message: err.message || "Some error occurred while retrieving movies.",
+            message: err.message || "Some error occurred while retrieving seats.",
         });
     }
 
@@ -51,5 +47,4 @@ exports.getSeatsAvailable = async (req, res) => {
     }
 
     res.json(result);
-
 }
