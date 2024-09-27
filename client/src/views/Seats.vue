@@ -42,54 +42,24 @@
     </div>
     <div class="flex gap-4">
       <div
-        class="bg-color-2 w-14 h-[78px] rounded-md flex p-3 flex-col items-center gap-1"
+        v-for="(day, index) in dates"
+        :key="index"
+        @click="handleDayClick(day)"
+        :class="dayClasses(day)"
+        class="w-14 h-[78px] rounded-xl flex p-3 flex-col items-center gap-1 cursor-pointer"
       >
-        <p class="text-color-3 font-bold">Fri</p>
-        <p class="poppins text-color-3 text-2xl font-bold">17</p>
-      </div>
-      <div
-        class="bg-color-3 w-14 h-[78px] rounded-xl flex p-3 flex-col items-center gap-1"
-      >
-        <p class="poppinsDay">Sat</p>
-        <p class="poppins text-color-1 text-2xl font-bold">18</p>
-      </div>
-      <div
-        class="bg-color-3 w-14 h-[78px] rounded-xl flex p-3 flex-col items-center gap-1"
-      >
-        <p class="poppinsDay">Sun</p>
-        <p class="poppins text-color-1 text-2xl font-bold">19</p>
-      </div>
-      <div
-        class="bg-color-3 w-14 h-[78px] rounded-xl flex p-3 flex-col items-center gap-1"
-      >
-        <p class="poppinsDay">Mon</p>
-        <p class="poppins text-color-1 text-2xl font-bold">20</p>
-      </div>
-      <div
-        class="bg-color-3 w-14 h-[78px] rounded-xl flex p-3 flex-col items-center gap-1"
-      >
-        <p class="poppinsDay">Tue</p>
-        <p class="poppins text-color-1 text-2xl font-bold">21</p>
+        <p :class="['poppinsDay', { 'text-white font-bold': selectedDay === day }]">{{ getDayName(day) }}</p>
+        <p :class="['poppins text-2xl font-bold', { 'text-white': selectedDay === day }]">{{ day }}</p>
       </div>
     </div>
     <div class="flex gap-4 mt-6 mb-12">
       <div
-        class="bg-color-2 w-[84px] h-[62px] rounded-md flex flex-col items-center p-1.5"
-      >
-        <p class="poppinsHour">13:00</p>
-        <p class="text-color-3 font-semi-bold text-xs">$ 5.25 3D</p>
-      </div>
-      <div
+        v-for="(timeSlot, index) in time"
+        :key="index"
         class="bg-color-3 w-[84px] h-[62px] rounded-md flex flex-col items-center p-1.5"
       >
-        <p class="poppins text-color-1 text-xl font-bold">15:45</p>
-        <p class="poppinsDay">$ 5.99 XD</p>
-      </div>
-      <div
-        class="bg-color-3 w-[84px] h-[62px] rounded-md flex flex-col items-center p-1.5"
-      >
-        <p class="poppins text-color-1 text-xl font-bold">18:50</p>
-        <p class="poppinsDay">$ 4.50 2D</p>
+        <p class="poppins text-color-1 text-xl font-bold">{{ timeSlot }}</p>
+        <p class="poppinsDay">$ 5.25 3D</p>
       </div>
     </div>
     <div class="w-[333px] flex gap-12 mb-5">
@@ -120,6 +90,9 @@ export default {
       rows: ["A", "B", "C", "D", "E", "F"],
       availableSeats: [],
       selectedSeat: null,
+      dates: [],
+      time: [],
+      selectedDay: null,
     };
   },
   created() {
@@ -144,9 +117,6 @@ export default {
         return 9;
       }
     },
-    created() {
-      this.fetchSeats();
-    },
     async fetchSeats() {
       try {
         const token = this.getCookie("token");
@@ -156,7 +126,7 @@ export default {
           return;
         }
         const response = await fetch(
-          "http://localhost:5000/shows/seats/v1/66f35dcab20ac6f3207cbf23",
+          `http://localhost:5000/shows/seats/v1/${this.$route.params.id}`,
           {
             method: "GET",
             headers: {
@@ -167,9 +137,19 @@ export default {
         );
         const data = await response.json();
         console.log("Fetched seats data:", data);
-
         data.forEach((item, index) => {
-          console.log(`Item ${index}:`, item.available_seats);
+          console.log("Seats", item.available_seats);
+          console.log("Date", item.date);
+          const date = new Date(item.date);
+          const day = date.getUTCDate();
+          const time =
+            date.getUTCHours() +
+            ":" +
+            date.getUTCMinutes().toString().padStart(2, "0");
+          console.log(`Day ${index}:`, day);
+          console.log(`Time ${index}:`, time);
+          this.dates.push(day); 
+          this.time.push(time); 
         });
 
         this.availableSeats = data[0].available_seats;
@@ -205,7 +185,6 @@ export default {
         console.error("Error handling seat click:", error);
       }
     },
-    // Define CSS classes based on availability and selection
     seatClasses(seatId) {
       const isAvailable = this.isSeatAvailable(seatId);
       const isSelected = this.isSelected(seatId);
@@ -221,6 +200,23 @@ export default {
     async goToLogin() {
       this.$router.push("/login");
     },
+    // Handle day click
+    handleDayClick(day) {
+      this.selectedDay = this.selectedDay === day ? null : day;
+    },
+    // Determine CSS classes for day
+    dayClasses(day) {
+      return {
+        'bg-color-2 text-white border-6 w-[54px] h-[78px]': this.selectedDay === day,
+        'bg-color-3 text-color-1 w-14 h-[78px]': this.selectedDay !== day,
+      };
+    },
+    // Get day name from date
+    getDayName(day) {
+      const date = new Date();
+      date.setUTCDate(day);
+      return date.toLocaleDateString('en-US', { weekday: 'short' });
+    }
   },
 };
 </script>
