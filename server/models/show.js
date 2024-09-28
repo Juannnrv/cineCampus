@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Theater = require("./theater");
 
 const showSchema = new mongoose.Schema(
   {
@@ -9,7 +10,7 @@ const showSchema = new mongoose.Schema(
     },
     theater_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "theater",
+      ref: Theater,
       required: true,
     },
     date: {
