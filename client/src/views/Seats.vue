@@ -48,18 +48,20 @@
         :class="dayClasses(day)"
         class="w-14 h-[78px] rounded-xl flex p-3 flex-col items-center gap-1 cursor-pointer"
       >
-        <p :class="['poppinsDay', { 'text-white font-bold': selectedDay === day }]">{{ getDayName(day) }}</p>
-        <p :class="['poppins text-2xl font-bold', { 'text-white': selectedDay === day }]">{{ day }}</p>
+        <p :class="dayTextClasses(day)">{{ getDayName(day) }}</p>
+        <p :class="dayNumberClasses(day)">{{ day }}</p>
       </div>
     </div>
     <div class="flex gap-4 mt-6 mb-12">
       <div
         v-for="(timeSlot, index) in time"
         :key="index"
-        class="bg-color-3 w-[84px] h-[62px] rounded-md flex flex-col items-center p-1.5"
+        @click="handleTimeClick(timeSlot)"
+        :class="timeClasses(timeSlot)"
+        class="w-[84px] h-[62px] rounded-md flex flex-col items-center p-1.5 cursor-pointer"
       >
-        <p class="poppins text-color-1 text-xl font-bold">{{ timeSlot }}</p>
-        <p class="poppinsDay">$ 5.25 3D</p>
+        <p :class="timeNumberClasses(timeSlot)">{{ timeSlot }}</p>
+        <p :class="timeTextClasses(timeSlot)">$ 5.25 3D</p>
       </div>
     </div>
     <div class="w-[333px] flex gap-12 mb-5">
@@ -89,10 +91,11 @@ export default {
     return {
       rows: ["A", "B", "C", "D", "E", "F"],
       availableSeats: [],
-      selectedSeat: null,
+      selectedSeats: [],
       dates: [],
       time: [],
       selectedDay: null,
+      selectedTime: null,
     };
   },
   created() {
@@ -107,15 +110,8 @@ export default {
     goToDetail() {
       this.$router.push(`/detail/${this.$route.params.id}`);
     },
-    // Define the number of seats per row
     seatsPerRow(row) {
-      if (row === "A") {
-        return 5;
-      } else if (row === "B") {
-        return 7;
-      } else {
-        return 9;
-      }
+      return row === "A" ? 5 : row === "B" ? 7 : 9;
     },
     async fetchSeats() {
       try {
@@ -136,87 +132,91 @@ export default {
           }
         );
         const data = await response.json();
-        console.log("Fetched seats data:", data);
-        data.forEach((item, index) => {
-          console.log("Seats", item.available_seats);
-          console.log("Date", item.date);
+        data.forEach((item) => {
           const date = new Date(item.date);
-          const day = date.getUTCDate();
-          const time =
-            date.getUTCHours() +
-            ":" +
-            date.getUTCMinutes().toString().padStart(2, "0");
-          console.log(`Day ${index}:`, day);
-          console.log(`Time ${index}:`, time);
-          this.dates.push(day); 
-          this.time.push(time); 
+          this.dates.push(date.getUTCDate());
+          this.time.push(
+            `${date.getUTCHours()}:${date
+              .getUTCMinutes()
+              .toString()
+              .padStart(2, "0")}`
+          );
         });
-
         this.availableSeats = data[0].available_seats;
       } catch (error) {
         console.error("Error fetching seats:", error);
       }
     },
-    // Determine if a seat is available
     isSeatAvailable(seatId) {
       const seat = this.availableSeats.find((s) => s.seat === seatId);
       return seat ? seat.availability : false;
     },
-    // Determine if a seat is selected
     isSelected(seatId) {
-      return this.selectedSeat === seatId;
+      return this.selectedSeats.includes(seatId);
     },
-    // Handle seat click
     handleSeatClick(seatId) {
-      try {
-        if (this.isSeatAvailable(seatId)) {
-          if (this.isSelected(seatId)) {
-            this.selectedSeat = null;
-            console.log(`Seat unselected: ${seatId}`);
-            return;
-          } else {
-            this.selectedSeat = seatId;
-            console.log(`Seat selected: ${seatId}`);
-          }
+      if (this.isSeatAvailable(seatId)) {
+        if (this.isSelected(seatId)) {
+          this.selectedSeats = this.selectedSeats.filter(
+            (seat) => seat !== seatId
+          );
         } else {
-          console.log(`Seat ${seatId} is unavailable`);
+          this.selectedSeats.push(seatId);
         }
-      } catch (error) {
-        console.error("Error handling seat click:", error);
+      } else {
+        console.log(`Seat ${seatId} is unavailable`);
       }
     },
     seatClasses(seatId) {
-      const isAvailable = this.isSeatAvailable(seatId);
-      const isSelected = this.isSelected(seatId);
-
-      if (isSelected) {
-        return "bg-color-2 text-white";
-      }
-      if (isAvailable) {
-        return "bg-color-4 text-gray-300";
-      }
-      return "bg-color-6 text-gray-700";
+      if (this.isSelected(seatId)) return "bg-color-2 text-white";
+      return this.isSeatAvailable(seatId)
+        ? "bg-color-4 text-gray-300"
+        : "bg-color-6 text-gray-700";
+    },
+    handleDayClick(day) {
+      this.selectedDay = this.selectedDay === day ? null : day;
+    },
+    handleTimeClick(timeSlot) {
+      this.selectedTime = this.selectedTime === timeSlot ? null : timeSlot;
+    },
+    dayClasses(day) {
+      return this.selectedDay === day
+        ? "bg-color-2 text-white border-6 w-[54px] h-[78px]"
+        : "bg-color-3 text-color-1 w-14 h-[78px]";
+    },
+    dayTextClasses(day) {
+      return this.selectedDay === day
+        ? "inter text-sm text-color-3 font-semibold"
+        : "interDay";
+    },
+    dayNumberClasses(day) {
+      return this.selectedDay === day
+        ? "poppins text-2xl font-bold text-color-3"
+        : "poppins text-2xl font-bold";
+    },
+    timeClasses(timeSlot) {
+      return this.selectedTime === timeSlot
+        ? "bg-color-2 w-[84px] h-[62px] rounded-md border-6"
+        : "bg-color-3 w-[84px] h-[62px] rounded-md";
+    },
+    timeNumberClasses(timeSlot) {
+      return this.selectedTime === timeSlot
+        ? "interHour"
+        : "inter text-xl text-color-1 font-bold";
+    },
+    timeTextClasses(timeSlot) {
+      return this.selectedTime === timeSlot
+        ? "inter text-sm text-color-3 font-500"
+        : "interDay";
+    },
+    getDayName(day) {
+      const date = new Date();
+      date.setDate(day);
+      return date.toLocaleDateString("en-US", { weekday: "short" });
     },
     async goToLogin() {
       this.$router.push("/login");
     },
-    // Handle day click
-    handleDayClick(day) {
-      this.selectedDay = this.selectedDay === day ? null : day;
-    },
-    // Determine CSS classes for day
-    dayClasses(day) {
-      return {
-        'bg-color-2 text-white border-6 w-[54px] h-[78px]': this.selectedDay === day,
-        'bg-color-3 text-color-1 w-14 h-[78px]': this.selectedDay !== day,
-      };
-    },
-    // Get day name from date
-    getDayName(day) {
-      const date = new Date();
-      date.setUTCDate(day);
-      return date.toLocaleDateString('en-US', { weekday: 'short' });
-    }
   },
 };
 </script>
@@ -241,14 +241,14 @@ export default {
   color: #ffffff;
 }
 
-.poppinsDay {
+.interDay {
   font-family: "Inter", sans-serif;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 500;
   color: #969696;
 }
 
-.poppinsHour {
+.interHour {
   font-family: "Inter", sans-serif;
   font-size: 20px;
   font-weight: 600;
