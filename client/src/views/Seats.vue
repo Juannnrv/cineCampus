@@ -40,28 +40,32 @@
         <p class="poppinsSmall">Selected</p>
       </div>
     </div>
-    <div class="flex gap-4">
+    <div class="flex gap-4 mb-6">
       <div
-        v-for="(day, index) in dates"
+        v-for="(day, index) in parsedDates"
         :key="index"
         @click="handleDayClick(day)"
         :class="dayClasses(day)"
-        class="w-14 h-[78px] rounded-xl flex p-3 flex-col items-center gap-1 cursor-pointer"
+        class="w-14 h-[78px] flex p-3 flex-col items-center gap-1 cursor-pointer"
       >
         <p :class="dayTextClasses(day)">{{ getDayName(day) }}</p>
-        <p :class="dayNumberClasses(day)">{{ day }}</p>
+        <p :class="dayNumberClasses(day)">{{ day.getDate() }}</p>
       </div>
     </div>
-    <div class="flex gap-4 mt-6 mb-12">
-      <div
-        v-for="(timeSlot, index) in time"
-        :key="index"
-        @click="handleTimeClick(timeSlot)"
-        :class="timeClasses(timeSlot)"
-        class="w-[84px] h-[62px] rounded-md flex flex-col items-center p-1.5 cursor-pointer"
-      >
-        <p :class="timeNumberClasses(timeSlot)">{{ timeSlot }}</p>
-        <p :class="timeTextClasses(timeSlot)">$ 5.25 3D</p>
+    <div class="flex gap-4 mb-12">
+      <div class="flex gap-4">
+        <div
+          v-for="(timeSlot, index) in filteredTimes"
+          :key="index"
+          @click="handleTimeClick(timeSlot)"
+          :class="timeClasses(timeSlot)"
+          class="w-[84px] h-[62px] flex flex-col items-center p-1.5 cursor-pointer"
+        >
+          <p :class="timeNumberClasses(timeSlot)">{{ timeSlot }}</p>
+          <p :class="timeTextClasses(timeSlot)">
+            $ {{ theater[index].price }} {{ theater[index].name }}
+          </p>
+        </div>
       </div>
     </div>
     <div class="w-[333px] flex gap-12 mb-5">
@@ -80,6 +84,7 @@
 <script>
 import Header from "../components/Header.vue";
 import Button from "../components/Button.vue";
+import { parseISO } from "date-fns";
 
 export default {
   name: "Seats",
@@ -94,12 +99,25 @@ export default {
       selectedSeats: [],
       dates: [],
       time: [],
+      theater: [],
       selectedDay: null,
       selectedTime: null,
     };
   },
-  created() {
-    this.fetchSeats();
+  computed: {
+    parsedDates() {
+      return this.dates.map((date) => parseISO(date));
+    },
+    filteredTimes() {
+      if (!this.selectedDay) return [];
+      const selectedDateString = this.selectedDay.toISOString().split("T")[0];
+      return this.time
+        .filter((show) => show.date === selectedDateString)
+        .map((show) => show.time);
+    },
+  },
+  mounted() {
+    this.fetchFirstAvailableShow();
   },
   methods: {
     getCookie(name) {
@@ -113,7 +131,7 @@ export default {
     seatsPerRow(row) {
       return row === "A" ? 5 : row === "B" ? 7 : 9;
     },
-    async fetchSeats() {
+    async fetchFirstAvailableShow() {
       try {
         const token = this.getCookie("token");
         if (!token) {
@@ -121,6 +139,7 @@ export default {
           this.goToLogin();
           return;
         }
+
         const response = await fetch(
           `http://localhost:5000/shows/seats/v1/${this.$route.params.id}`,
           {
@@ -131,21 +150,80 @@ export default {
             },
           }
         );
+
+        if (!response.ok) {
+          throw new Error(`Error fetching seats: ${response.statusText}`);
+        }
+
         const data = await response.json();
-        data.forEach((item) => {
-          const date = new Date(item.date);
-          this.dates.push(date.getUTCDate());
-          this.time.push(
-            `${date.getUTCHours()}:${date
-              .getUTCMinutes()
-              .toString()
-              .padStart(2, "0")}`
-          );
-        });
-        this.availableSeats = data[0].available_seats;
+        if (data.length > 0) {
+          const firstShow = data[0];
+          if (firstShow.date && firstShow.time && firstShow.availableSeats) {
+            this.selectedDay = parseISO(firstShow.date);
+            this.selectedTime = firstShow.time;
+            this.availableSeats = firstShow.availableSeats;
+            this.dates = [...new Set(data.map((show) => show.date))];
+            this.time = data;
+            this.theater = data.map((show) => show.theater);
+          } else {
+            console.error("Invalid data structure:", firstShow);
+          }
+        } else {
+          console.warn("No shows available");
+        }
       } catch (error) {
         console.error("Error fetching seats:", error);
       }
+    },
+    async fetchSeats() {
+      try {
+        const token = this.getCookie("token");
+        if (!token) {
+          console.error("No token found");
+          this.goToLogin();
+          return;
+        }
+
+        const selectedDate = this.selectedDay;
+        const selectedTime = this.selectedTime;
+
+        if (!selectedDate || !selectedTime) {
+          console.error("Date or time not selected");
+          return;
+        }
+
+        const date = selectedDate.toISOString().split("T")[0];
+        const [hour, minute] = selectedTime.split(":");
+
+        const response = await fetch(
+          `http://localhost:5000/shows/seats/v1/${this.$route.params.id}?date=${date}&hour=${hour}&minute=${minute}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error fetching seats: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log(data);
+        this.availableSeats = data[0].availableSeats;
+      } catch (error) {
+        console.error("Error fetching seats:", error);
+      }
+    },
+    handleDayClick(day) {
+      this.selectedDay = day;
+      this.fetchSeats();
+    },
+    handleTimeClick(timeSlot) {
+      this.selectedTime = this.selectedTime === timeSlot ? null : timeSlot;
+      this.fetchSeats();
     },
     isSeatAvailable(seatId) {
       const seat = this.availableSeats.find((s) => s.seat === seatId);
@@ -163,56 +241,67 @@ export default {
         } else {
           this.selectedSeats.push(seatId);
         }
-      } else {
-        console.log(`Seat ${seatId} is unavailable`);
       }
     },
-    seatClasses(seatId) {
-      if (this.isSelected(seatId)) return "bg-color-2 text-white";
-      return this.isSeatAvailable(seatId)
-        ? "bg-color-4 text-gray-300"
-        : "bg-color-6 text-gray-700";
-    },
-    handleDayClick(day) {
-      this.selectedDay = this.selectedDay === day ? null : day;
-    },
-    handleTimeClick(timeSlot) {
-      this.selectedTime = this.selectedTime === timeSlot ? null : timeSlot;
-    },
     dayClasses(day) {
-      return this.selectedDay === day
-        ? "bg-color-2 text-white border-6 w-[54px] h-[78px]"
-        : "bg-color-3 text-color-1 w-14 h-[78px]";
+      return {
+        "bg-color-2 text-white rounded-md w-[54px] h-[78px]":
+          this.selectedDay &&
+          this.selectedDay.toDateString() === day.toDateString(),
+        "bg-color-3 text-color-1 rounded-xl w-14 h-[78px]":
+          !this.selectedDay ||
+          this.selectedDay.toDateString() !== day.toDateString(),
+      };
     },
     dayTextClasses(day) {
-      return this.selectedDay === day
-        ? "inter text-sm text-color-3 font-semibold"
-        : "interDay";
+      return {
+        "inter text-sm text-color-3 font-semibold":
+          this.selectedDay &&
+          this.selectedDay.toDateString() === day.toDateString(),
+        interDay:
+          !this.selectedDay ||
+          this.selectedDay.toDateString() !== day.toDateString(),
+      };
     },
     dayNumberClasses(day) {
-      return this.selectedDay === day
-        ? "poppins text-2xl font-bold text-color-3"
-        : "poppins text-2xl font-bold";
+      return {
+        "poppins text-2xl font-bold text-color-3":
+          this.selectedDay &&
+          this.selectedDay.toDateString() === day.toDateString(),
+        "poppins text-2xl font-bold":
+          !this.selectedDay ||
+          this.selectedDay.toDateString() !== day.toDateString(),
+      };
     },
     timeClasses(timeSlot) {
-      return this.selectedTime === timeSlot
-        ? "bg-color-2 w-[84px] h-[62px] rounded-md border-6"
-        : "bg-color-3 w-[84px] h-[62px] rounded-md";
+      return {
+        "bg-color-2 w-[84px] h-[62px] rounded-md":
+          this.selectedTime === timeSlot,
+        "bg-color-3 w-[84px] h-[62px] rounded-xl":
+          this.selectedTime !== timeSlot,
+      };
     },
     timeNumberClasses(timeSlot) {
-      return this.selectedTime === timeSlot
-        ? "interHour"
-        : "inter text-xl text-color-1 font-bold";
+      return {
+        interHour: this.selectedTime === timeSlot,
+        "inter text-xl text-color-1 font-bold": this.selectedTime !== timeSlot,
+      };
     },
     timeTextClasses(timeSlot) {
-      return this.selectedTime === timeSlot
-        ? "inter text-sm text-color-3 font-500"
-        : "interDay";
+      return {
+        "inter text-sm text-color-3 font-500": this.selectedTime === timeSlot,
+        interDay: this.selectedTime !== timeSlot,
+      };
+    },
+    seatClasses(seatId) {
+      return {
+        "bg-color-2": this.isSelected(seatId),
+        "bg-color-5": this.isSeatAvailable(seatId) && !this.isSelected(seatId),
+        "bg-color-6": !this.isSeatAvailable(seatId),
+      };
     },
     getDayName(day) {
-      const date = new Date();
-      date.setDate(day);
-      return date.toLocaleDateString("en-US", { weekday: "short" });
+      return day.toLocaleString("en-US", { weekday: "short" });
     },
     async goToLogin() {
       this.$router.push("/login");
