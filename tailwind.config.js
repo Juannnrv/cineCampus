@@ -13,6 +13,7 @@ export default {
         "color-4": "#272727",
         "color-5": "#323232",
         "color-6": "#CECECE",
+        "color-7": "#381818",
       }
     },
   },
