@@ -14,7 +14,7 @@ const routes = [
     { path: '/cine', component: Cinema },
     { path: '/detail/:id', component: Detail },
     { path: '/seats/:id', component: Seats },
-    { path: '/order/:id', component: Order },
+    { path: '/order/:movieId/:showId', component: Order },
 ]
 
 const router = createRouter({

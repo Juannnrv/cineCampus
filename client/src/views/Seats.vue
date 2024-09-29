@@ -389,7 +389,7 @@ export default {
         sessionStorage.setItem("selectedDateTime", formattedDateTime);
       }
 
-      this.$router.push(`/order/${this.showSelected}`);
+      this.$router.push(`/order/${this.$route.params.id}/${this.showSelected}`);
       console.log("ordered taken");
     },
   },
