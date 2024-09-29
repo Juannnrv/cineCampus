@@ -3,6 +3,7 @@
     class="w-screen h-screen flex flex-col items-center overflow-y-scroll bg-color-1"
   >
     <Header :headerText="'Choose Seat'" @arrow-clicked="goToDetail" />
+    <img class="mt-5 mb-10" :src=ScreenImg>
     <div class="mb-8 w-[365px]">
       <div class="flex flex-col">
         <div
@@ -87,6 +88,7 @@
 import Header from "../components/Header.vue";
 import Button from "../components/Button.vue";
 import { parseISO } from "date-fns";
+import ScreenImg from "../assets/img/screen.svg";
 
 export default {
   name: "Seats",
@@ -104,6 +106,7 @@ export default {
       selectedDay: null,
       selectedTime: null,
       theaterPrice: 0,
+      ScreenImg,
     };
   },
   computed: {
