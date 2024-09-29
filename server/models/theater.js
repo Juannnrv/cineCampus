@@ -14,13 +14,13 @@ const theaterSchema = new mongoose.Schema(
   {
     collection: "theater",
     toJSON: {
-      transform: (ret) => {
+      transform: (doc, ret) => {
         delete ret.__v;
         return ret;
       },
     },
     toObject: {
-      transform: (ret) => {
+      transform: (doc, ret) => {
         delete ret.__v;
         return ret;
       },

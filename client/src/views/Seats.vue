@@ -61,9 +61,9 @@
           :class="timeClasses(timeSlot)"
           class="w-[84px] h-[62px] flex flex-col items-center p-1.5 cursor-pointer"
         >
-          <p :class="timeNumberClasses(timeSlot)">{{ timeSlot }}</p>
+          <p :class="timeNumberClasses(timeSlot)">{{ timeSlot.time }}</p>
           <p :class="timeTextClasses(timeSlot)">
-            $ {{ theater[index].price }} {{ theater[index].name }}
+            $ {{ timeSlot.theater.price }} {{ timeSlot.theater.name }}
           </p>
         </div>
       </div>
@@ -71,7 +71,9 @@
     <div class="w-[333px] flex gap-12 mb-5">
       <div>
         <p class="text-lg text-color-3 inter">Price</p>
-        <p class="text-lg text-color-3 inter font-semibold">$24,99</p>
+        <p class="text-lg text-color-3 inter font-semibold">
+          ${{ totalPrice.toFixed(2) }}
+        </p>
       </div>
       <Button
         :text="'Buy Ticket'"
@@ -98,10 +100,10 @@ export default {
       availableSeats: [],
       selectedSeats: [],
       dates: [],
-      time: [],
-      theater: [],
+      shows: [],
       selectedDay: null,
       selectedTime: null,
+      theaterPrice: 0,
     };
   },
   computed: {
@@ -111,9 +113,14 @@ export default {
     filteredTimes() {
       if (!this.selectedDay) return [];
       const selectedDateString = this.selectedDay.toISOString().split("T")[0];
-      return this.time
-        .filter((show) => show.date === selectedDateString)
-        .map((show) => show.time);
+      return this.shows.filter((show) => show.date === selectedDateString);
+    },
+    totalPrice() {
+      const seatPrice = this.selectedSeats.reduce((total, seatId) => {
+        const seat = this.availableSeats.find((s) => s.seat === seatId);
+        return total + (seat ? seat.price : 0);
+      }, 0);
+      return this.theaterPrice + seatPrice;
     },
   },
   mounted() {
@@ -163,8 +170,8 @@ export default {
             this.selectedTime = firstShow.time;
             this.availableSeats = firstShow.availableSeats;
             this.dates = [...new Set(data.map((show) => show.date))];
-            this.time = data;
-            this.theater = data.map((show) => show.theater);
+            this.shows = data;
+            this.updateTheaterPrice();
           } else {
             console.error("Invalid data structure:", firstShow);
           }
@@ -211,19 +218,38 @@ export default {
         }
 
         const data = await response.json();
-        console.log(data);
         this.availableSeats = data[0].availableSeats;
+        this.updateTheaterPrice();
       } catch (error) {
         console.error("Error fetching seats:", error);
       }
     },
-    handleDayClick(day) {
+    async handleDayClick(day) {
       this.selectedDay = day;
-      this.fetchSeats();
+      const selectedDateString = day.toISOString().split("T")[0];
+      const availableTimes = this.shows.filter(
+        (show) => show.date === selectedDateString
+      );
+
+      if (availableTimes.length > 0) {
+        this.selectedTime = availableTimes[0].time;
+        await this.updateSeatsAndPrice();
+      } else {
+        this.selectedTime = null;
+        this.availableSeats = [];
+        this.selectedSeats = [];
+        this.theaterPrice = 0;
+      }
     },
-    handleTimeClick(timeSlot) {
-      this.selectedTime = this.selectedTime === timeSlot ? null : timeSlot;
-      this.fetchSeats();
+    async handleTimeClick(timeSlot) {
+      this.selectedTime =
+        this.selectedTime === timeSlot.time ? null : timeSlot.time;
+      await this.updateSeatsAndPrice();
+    },
+    async updateSeatsAndPrice() {
+      await this.fetchSeats();
+      this.selectedSeats = [];
+      this.updateTheaterPrice();
     },
     isSeatAvailable(seatId) {
       const seat = this.availableSeats.find((s) => s.seat === seatId);
@@ -241,6 +267,9 @@ export default {
         } else {
           this.selectedSeats.push(seatId);
         }
+
+        console.log("Asientos seleccionados:", this.selectedSeats);
+        console.log("Precio total:", this.totalPrice);
       }
     },
     dayClasses(day) {
@@ -276,21 +305,23 @@ export default {
     timeClasses(timeSlot) {
       return {
         "bg-color-2 w-[84px] h-[62px] rounded-md":
-          this.selectedTime === timeSlot,
+          this.selectedTime === timeSlot.time,
         "bg-color-3 w-[84px] h-[62px] rounded-xl":
-          this.selectedTime !== timeSlot,
+          this.selectedTime !== timeSlot.time,
       };
     },
     timeNumberClasses(timeSlot) {
       return {
-        interHour: this.selectedTime === timeSlot,
-        "inter text-xl text-color-1 font-bold": this.selectedTime !== timeSlot,
+        interHour: this.selectedTime === timeSlot.time,
+        "inter text-xl text-color-1 font-bold":
+          this.selectedTime !== timeSlot.time,
       };
     },
     timeTextClasses(timeSlot) {
       return {
-        "inter text-sm text-color-3 font-500": this.selectedTime === timeSlot,
-        interDay: this.selectedTime !== timeSlot,
+        "inter text-sm text-color-3 font-500":
+          this.selectedTime === timeSlot.time,
+        interDay: this.selectedTime !== timeSlot.time,
       };
     },
     seatClasses(seatId) {
@@ -305,6 +336,15 @@ export default {
     },
     async goToLogin() {
       this.$router.push("/login");
+    },
+    updateTheaterPrice() {
+      const selectedShow = this.shows.find(
+        (show) =>
+          show.date === this.selectedDay.toISOString().split("T")[0] &&
+          show.time === this.selectedTime
+      );
+
+      this.theaterPrice = selectedShow ? selectedShow.theater.price : 0;
     },
   },
 };
