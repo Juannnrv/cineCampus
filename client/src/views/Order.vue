@@ -165,6 +165,7 @@ export default {
       decodedToken: {},
       userCard: null,
       errorMsg: null,
+      ticket: null,
     };
   },
   computed: {
@@ -180,6 +181,9 @@ export default {
     },
     showID() {
       return this.$route.params.showId;
+    },
+    movieID() {
+      return this.$route.params.movieId;
     },
     seatCounts() {
       const counts = { normal: 0, premium: 0 };
@@ -349,6 +353,9 @@ export default {
         if (response.ok) {
           const data = await response.json();
           console.log("movement", data);
+          this.ticket = data.ticket._id;
+          console.log("ticket", this.ticket);
+          this.$router.push(`/ticket/${this.movieID}/${this.showID}/${this.ticket}`);
         } else {
           const errorData = await response.json();
           console.error("Failed to purchase ticket", errorData.message);

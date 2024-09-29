@@ -14,6 +14,7 @@ export default {
         "color-5": "#323232",
         "color-6": "#CECECE",
         "color-7": "#381818",
+        "color-8": "#787878",
       }
     },
   },
