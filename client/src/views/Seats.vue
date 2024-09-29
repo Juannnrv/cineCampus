@@ -3,7 +3,7 @@
     class="w-screen h-screen flex flex-col items-center overflow-y-scroll bg-color-1"
   >
     <Header :headerText="'Choose Seat'" @arrow-clicked="goToDetail" />
-    <img class="mt-5 mb-10" :src=ScreenImg>
+    <img class="mt-5 mb-10" :src="ScreenImg" />
     <div class="mb-8 w-[365px]">
       <div class="flex flex-col">
         <div
@@ -78,7 +78,9 @@
       </div>
       <Button
         :text="'Buy Ticket'"
-        buttonClass="w-[221px] text-base inter font-semibold text-color-3 bg-color-2"
+        :disabled="isButtonDisabled"
+        buttonClass="w-[221px] text-base inter font-semibold text-color-3 bg-color-2 cursor-pointer"
+        @click="goToOrder"
       ></Button>
     </div>
   </section>
@@ -107,6 +109,7 @@ export default {
       selectedTime: null,
       theaterPrice: 0,
       ScreenImg,
+      showSelected: null,
     };
   },
   computed: {
@@ -121,9 +124,13 @@ export default {
     totalPrice() {
       const seatPrice = this.selectedSeats.reduce((total, seatId) => {
         const seat = this.availableSeats.find((s) => s.seat === seatId);
-        return total + (seat ? seat.price : 0);
+        return total + (seat && seat.seat_type === "premium" ? 50 : 0);
       }, 0);
       return this.theaterPrice + seatPrice;
+    },
+    isButtonDisabled() {
+      console.log(this.selectedSeats);
+      return this.selectedSeats.length === 0;
     },
   },
   mounted() {
@@ -221,6 +228,7 @@ export default {
         }
 
         const data = await response.json();
+        this.showSelected = data[0].showingIds[0];
         this.availableSeats = data[0].availableSeats;
         this.updateTheaterPrice();
       } catch (error) {
@@ -348,6 +356,41 @@ export default {
       );
 
       this.theaterPrice = selectedShow ? selectedShow.theater.price : 0;
+    },
+    formatSelectedDateTime() {
+      if (!this.selectedDay || !this.selectedTime) return null;
+
+      const options = {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      };
+
+      const date = new Date(this.selectedDay);
+      const [hour, minute] = this.selectedTime.split(":");
+      date.setHours(hour, minute);
+
+      return date.toLocaleString("en-US", options).replace(",", ".");
+    },
+
+    goToOrder() {
+      sessionStorage.setItem(
+        "selectedSeats",
+        JSON.stringify(this.selectedSeats)
+      );
+      sessionStorage.setItem("totalPrice", this.totalPrice);
+
+      const formattedDateTime = this.formatSelectedDateTime();
+      if (formattedDateTime) {
+        sessionStorage.setItem("selectedDateTime", formattedDateTime);
+      }
+
+      this.$router.push(`/order/${this.$route.params.id}/${this.showSelected}`);
+      console.log("ordered taken");
     },
   },
 };
