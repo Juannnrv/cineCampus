@@ -79,6 +79,7 @@
         </p>
         <div
           class="flex flex-row justify-between bg-color-4 border-1 border-color-3 border-opacity-20 w-full h-[70px] rounded-lg p-3.5 mb-4 border-inside"
+          v-if="userCard"
         >
           <div class="flex gap-5">
             <img
@@ -113,10 +114,12 @@
           </p>
         </div>
       </article>
+      <p v-if="errorMsg" class="poppins text-color-2 font-medium text-[15px] mt-5">{{ errorMsg }}</p>
       <footer class="mt-16 mb-5">
         <Button
           text="Buy ticket"
           buttonClass="bg-color-2 font-inter font-semibold text-slate-50 px-36 py-4 rounded-lg w-full"
+          @click="purchaseTicket"
         />
       </footer>
     </section>
@@ -129,6 +132,21 @@ import mastercardImg from "../assets/img/mastercard.svg";
 import checkImg from "../assets/img/check.svg";
 import noCheckImg from "../assets/img/noCheck.svg";
 import Button from "../components/Button.vue";
+
+function decodeJWT(token) {
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+
+  return JSON.parse(jsonPayload);
+}
 
 export default {
   name: "Order",
@@ -144,6 +162,9 @@ export default {
       noCheckImg,
       check: false,
       timeLeft: 15 * 60,
+      decodedToken: {},
+      userCard: null,
+      errorMsg: null,
     };
   },
   computed: {
@@ -181,6 +202,11 @@ export default {
   mounted() {
     this.getOrderInfo();
     this.startCountDown();
+    const token = this.getCookie("token");
+    if (token) {
+      this.decodeToken(token);
+    }
+    this.getUserCard();
   },
   methods: {
     goToSeats() {
@@ -191,6 +217,23 @@ export default {
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(";").shift();
     },
+    decodeToken(token) {
+      try {
+        const decoded = decodeJWT(token);
+        console.log("Decoded Token:", decoded);
+        this.decodedToken = decoded;
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+      }
+    },
+    showCookieInfo() {
+      const token = this.getCookie("token");
+      if (token) {
+        console.log("Token:", token);
+      } else {
+        console.log("No token found");
+      }
+    },
     async getOrderInfo() {
       try {
         const token = this.getCookie("token");
@@ -198,6 +241,8 @@ export default {
           console.error("No token found");
           this.goToLogin();
           return;
+        } else {
+          this.decodeToken(token);
         }
         const response = await fetch(
           `http://localhost:5000/movies/v1/${this.$route.params.movieId}`,
@@ -212,7 +257,7 @@ export default {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          console.log("movie", data);
           this.movie = data;
         } else {
           console.log("Failed to fetch data");
@@ -237,6 +282,81 @@ export default {
           alert("Time is up! Please select your seats again.");
         }
       }, 1000);
+    },
+    async getUserCard() {
+      try {
+        const token = this.getCookie("token");
+        if (!token) {
+          console.error("No token found");
+          this.goToLogin();
+          return;
+        } else {
+          this.decodeToken(token);
+        }
+        const response = await fetch(
+          `http://localhost:5000/users/v1/${this.decodedToken.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("user", data);
+          if (data.card_id) {
+            this.userCard = data.card_id;
+          } else {
+            this.userCard = null;
+          }
+          console.log("userCard", this.userCard);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async purchaseTicket() {
+      try {
+        const token = this.getCookie("token");
+        if (!token) {
+          console.error("No token found");
+          this.goToLogin();
+          return;
+        } else {
+          this.decodeToken(token);
+        }
+        const response = await fetch(
+          `http://localhost:5000/tickets/purchase/v1`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              user_id: this.decodedToken.id,
+              show_id: this.showID,
+              date_movement: new Date().toISOString(),
+              seats: this.sessionData.seats,
+              card_id: this.userCard,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("movement", data);
+        } else {
+          const errorData = await response.json();
+          console.error("Failed to purchase ticket", errorData.message);
+          this.errorMsg = errorData.message;
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };

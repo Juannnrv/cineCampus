@@ -73,7 +73,7 @@ exports.purchaseTicket = async (req, res) => {
     const { result: card, err: cardErr } = await handleAsync(() => Card.findById(user_card));
   
     if (cardErr || !card) {
-      return res.status(404).json({ message: "Card not found." });
+      return res.status(404).json({ message: "Card not found or card it is not valid." });
     }
   
     if (card_id.toString() !== user_card?.toString() || card.validity === false) {
