@@ -5,6 +5,7 @@ import Login from '../views/Login.vue'
 import Cinema from '../views/Cinema.vue'
 import Detail from '../views/Detail.vue'
 import Seats from '../views/Seats.vue'
+import Order from '../views/Order.vue'
 
 const routes = [
     { path: '/', component: Home },
@@ -13,6 +14,7 @@ const routes = [
     { path: '/cine', component: Cinema },
     { path: '/detail/:id', component: Detail },
     { path: '/seats/:id', component: Seats },
+    { path: '/order/:id', component: Order },
 ]
 
 const router = createRouter({
