@@ -9,26 +9,32 @@ const userRoutes = require("./server/routes/userRoutes");
 const authRoutes = require("./server/routes/authRoutes");
 const authenticate = require("./server/middleware/authMiddleware");
 const cookieParser = require("cookie-parser");
+const { join } = require("path");
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  })
-);
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
+
+app.use(
+  express.static(join(__dirname, "client/dist"), {
+    setHeaders: (res, path) => {
+      console.log(`Serving file: ${path}`);
+    },
+  })
+);
 
 Database.getInstance();
 
 app.use("/login", authRoutes);
 app.use("/users", userRoutes);
-
 app.use(authenticate);
-
 app.use("/movies", movieRoutes);
 app.use("/tickets", movementRoutes);
 app.use("/shows", showRoutes);
+
+app.get("*", (req, res) => {
+  res.sendFile(join(__dirname, "client/dist", "index.html"));
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

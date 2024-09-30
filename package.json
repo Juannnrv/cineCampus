@@ -7,7 +7,7 @@
     "dev:front": "vite",
     "dev:back": "node --env-file .env --watch server.js",
     "dev": "concurrently \"npm run dev:front\" \"npm run dev:back\"",
-    "build": "vite build",
+    "build": "concurrently \"vite build\" \"npm run dev:back\"",
     "preview": "vite preview"
   },
   "keywords": [],
