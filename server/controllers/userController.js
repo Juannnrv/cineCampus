@@ -71,29 +71,29 @@ exports.createUser = async (req, res) => {
       });
     }
 
-    const { result: adminCommandResult, error: adminCommandError } =
-      await handleAsync(() =>
-        cineDB.command({
-          createUser: newAdmin.name,
-          pwd: newAdmin.password,
-          roles: [{ role: "adminCine", db: "cineCampus" }],
-        })
-      );
+    // const { result: adminCommandResult, error: adminCommandError } =
+    //   await handleAsync(() =>
+    //     cineDB.command({
+    //       createUser: newAdmin.name,
+    //       pwd: newAdmin.password,
+    //       roles: [{ role: "adminCine", db: "cineCampus" }],
+    //     })
+    //   );
 
-    if (adminCommandError) {
-      console.error("Error creating admin in DB:", adminCommandError);
+    // if (adminCommandError) {
+    //   console.error("Error creating admin in DB:", adminCommandError);
 
-      await handleAsync(() => User.findByIdAndDelete(newAdmin._id));
-      return res.status(500).json({
-        message: "Error creating admin in DB",
-        error: adminCommandError,
-      });
-    }
+    //   await handleAsync(() => User.findByIdAndDelete(newAdmin._id));
+    //   return res.status(500).json({
+    //     message: "Error creating admin in DB",
+    //     error: adminCommandError,
+    //   });
+    // }
 
-    return res.status(201).json({
-      message: "Admin created successfully",
-      user: new UserDTO(newAdmin),
-    });
+    // return res.status(201).json({
+    //   message: "Admin created successfully",
+    //   user: new UserDTO(newAdmin),
+    // });
   }
 
   if (card_id) {
@@ -122,26 +122,26 @@ exports.createUser = async (req, res) => {
         .json({ message: "Error saving userVIP", error: userVIPSaveError });
     }
 
-    const { result: userVIPCommandResult, error: userVIPCommandError } =
-      await handleAsync(() =>
-        cineDB.command({
-          createUser: newUserVIP.name,
-          pwd: newUserVIP.password,
-          roles: [{ role: "userVIP", db: "cineCampus" }],
-        })
-      );
-    if (userVIPCommandError) {
-      return res.status(500).json({
-        message: "Error creating userVIP in DB",
-        error: userVIPCommandError,
-      });
-    }
+    // const { result: userVIPCommandResult, error: userVIPCommandError } =
+    //   await handleAsync(() =>
+    //     cineDB.command({
+    //       createUser: newUserVIP.name,
+    //       pwd: newUserVIP.password,
+    //       roles: [{ role: "userVIP", db: "cineCampus" }],
+    //     })
+    //   );
+    // if (userVIPCommandError) {
+    //   return res.status(500).json({
+    //     message: "Error creating userVIP in DB",
+    //     error: userVIPCommandError,
+    //   });
+    // }
 
-    return res.status(201).json({
-      message: "UserVIP created successfully",
-      user: new UserDTO(newUserVIP),
-      card: new CardDTO(card),
-    });
+    // return res.status(201).json({
+    //   message: "UserVIP created successfully",
+    //   user: new UserDTO(newUserVIP),
+    //   card: new CardDTO(card),
+    // });
   } else {
     const user = new User({
       name,
@@ -160,25 +160,25 @@ exports.createUser = async (req, res) => {
         .json({ message: "Error saving user", error: userSaveError });
     }
 
-    const { result: userCommandResult, error: userCommandError } =
-      await handleAsync(() =>
-        cineDB.command({
-          createUser: newUser.name,
-          pwd: newUser.password,
-          roles: [{ role: "user", db: "cineCampus" }],
-        })
-      );
-    if (userCommandError) {
-      return res.status(500).json({
-        message: "Error creating user in DB",
-        error: userCommandError,
-      });
-    }
+    // const { result: userCommandResult, error: userCommandError } =
+    //   await handleAsync(() =>
+    //     cineDB.command({
+    //       createUser: newUser.name,
+    //       pwd: newUser.password,
+    //       roles: [{ role: "user", db: "cineCampus" }],
+    //     })
+    //   );
+    // if (userCommandError) {
+    //   return res.status(500).json({
+    //     message: "Error creating user in DB",
+    //     error: userCommandError,
+    //   });
+    // }
 
-    return res.status(201).json({
-      message: "User created successfully",
-      user: new UserDTO(newUser),
-    });
+    // return res.status(201).json({
+    //   message: "User created successfully",
+    //   user: new UserDTO(newUser),
+    // });
   }
 };
 
