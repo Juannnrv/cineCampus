@@ -65,15 +65,14 @@ To run this project, you need to have Node.js and npm installed on your machine.
 To connect the application to the database and configure other sensitive parameters, you must create an `.env` file in the root of the project. Here is an example of environment variables you might need:
 ```
 # MongoDB protocol and URI configuration
+
 MONGO_PROTOCOLO=mongodb://
 MONGO_USER=juan
 MONGO_PSW=juan123
-MONGO_HOST=192.168.1.2
+MONGO_HOST=10.0.0.193
 MONGO_PORT=27017
 MONGO_DB_NAME=cineCampus
-
-# Secret key to JWT
-JWT_SECRET=bb61183cbec420f75d9a693dc940ec3376ddd4d90623d5f2985c798bd90ea3a5
+JWT_SECRET=fa6c8dadf184b54901463d255e
 
 ```
 
